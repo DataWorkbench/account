@@ -1,0 +1,37 @@
+package handler
+
+import (
+	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
+	"net/url"
+	"strings"
+
+	"github.com/DataWorkbench/account/executor"
+	"github.com/DataWorkbench/account/internal/source"
+	"github.com/DataWorkbench/common/qerror"
+	"github.com/DataWorkbench/gproto/pkg/accountpb"
+)
+
+func CalculateSignature(stringToSign string, secretAccessKey string) string {
+	h := hmac.New(sha256.New, []byte(secretAccessKey))
+	h.Write([]byte(stringToSign))
+	signature := strings.TrimSpace(base64.StdEncoding.EncodeToString(h.Sum(nil)))
+	signature = strings.Replace(signature, " ", "+", -1)
+	signature = url.QueryEscape(signature)
+	return signature
+}
+
+func ValidateRequestSignature(ctx context.Context, req *accountpb.ValidateRequestSignatureRequest) (*executor.AccessKey, error) {
+	secretAccessKey, err := source.SelectSource(req.ReqSource, cfg, ctx).GetSecretAccessKey(req.ReqAccessKeyId)
+	if err != nil {
+		return nil, err
+	}
+	stringToSign := strings.ToUpper(req.ReqMethod) + "\n" + req.ReqPath + "\n" + req.ReqQueryString
+	signature := CalculateSignature(stringToSign, secretAccessKey.SecretAccessKey)
+	if signature != req.ReqSignature {
+		return nil, qerror.ValidateSignatureFailed.Format(req.ReqSignature, signature)
+	}
+	return secretAccessKey, nil
+}

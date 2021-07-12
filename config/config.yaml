@@ -1,0 +1,34 @@
+# config file for account server
+
+# 1=>"debug", 2=>"info", 3=>"warn", 4=>"error", 5=>"fatal"
+log_level: 1
+
+grpc_server:
+  address: "127.0.0.1:9595"  # required
+  log_level: 1 #  1 => info, 2 => waring, 3 => error, 4 => fatal
+  log_verbosity: 9
+
+metrics_server:
+  enabled: true
+  address: "127.0.0.1:9596" # required when enabled is true
+  url_path: "/metrics"
+
+mysql:
+  hosts: "127.0.0.1:3306"  # required
+  users: "root"  # required
+  password: "password"  # required
+  database: "data_workbench"  # required
+  max_idle_conn: 16
+  max_open_conn: 128
+  conn_max_lifetime: 10m
+  log_level: 4 # 1 => Silent, 2 => Error, 3 => Warn, 4 => Info
+  slow_threshold: 2s
+
+
+qingcloud_config:
+  access_key_id: "IKSMDBWVIECPIVNDYZAB"
+  secret_access_key: "JnEco2qZ6EvXt89mJpCVdkBoc5AwPA0unrkFkOxq"
+  host: "api.alphacloud.com"
+  port: 7777
+  protocol: "http"
+  uri: "/iaas"

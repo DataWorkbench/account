@@ -15,10 +15,12 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# tmp files generated via tools
-*.tmp
+# Mac OS Desktop Services Store
+.DS_Store 
 
 .idea
 build
 .editorconfig
 
+# Vscode
+*.code-workspace
