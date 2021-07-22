@@ -31,6 +31,7 @@ func ValidateRequestSignature(ctx context.Context, req *accountpb.ValidateReques
 	stringToSign := strings.ToUpper(req.ReqMethod) + "\n" + req.ReqPath + "\n" + req.ReqQueryString
 	signature := CalculateSignature(stringToSign, secretAccessKey.SecretAccessKey)
 	if signature != req.ReqSignature {
+		logger.Info().String(qerror.ValidateSignatureFailed.Format(req.ReqSignature, signature).String(), "").Fire()
 		return nil, qerror.ValidateSignatureFailed.Format(req.ReqSignature, signature)
 	}
 	return secretAccessKey, nil

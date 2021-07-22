@@ -10,12 +10,15 @@ import (
 
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/account/executor"
+	"github.com/DataWorkbench/account/handler"
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/grpcwrap"
 	"github.com/DataWorkbench/common/metrics"
+	"github.com/DataWorkbench/common/rediswrap"
 	"github.com/DataWorkbench/common/utils/buildinfo"
 	"github.com/DataWorkbench/glog"
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
+	"github.com/go-redis/redis/v8"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
@@ -39,13 +42,17 @@ func Start() (err error) {
 		db           *gorm.DB
 		rpcServer    *grpcwrap.Server
 		metricServer *metrics.Server
+		rdb          *redis.Client
 	)
 
 	defer func() {
 		rpcServer.GracefulStop()
 		_ = metricServer.Shutdown(ctx)
 		_ = lp.Close()
+		_ = rdb.Close()
 	}()
+
+	grpcwrap.SetLogger(lp, cfg.GRPCLog)
 
 	// init gorm.DB
 	db, err = gormwrap.NewMySQLConn(ctx, cfg.MySQL)
@@ -59,7 +66,14 @@ func Start() (err error) {
 		return
 	}
 
+	// init redis
+	rdb, err = rediswrap.NewRedisConn(ctx, cfg.Redis)
+	if err != nil {
+		return
+	}
+
 	executor.Init(db, lp, cfg)
+	handler.Init(handler.WithCfg(cfg), handler.WithRedis(rdb, ctx), handler.WithLogger(lp))
 	rpcServer.Register(func(s *grpc.Server) {
 		accountpb.RegisterAccountServer(s, &AccountServer{})
 	})

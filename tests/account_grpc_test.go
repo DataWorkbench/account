@@ -19,9 +19,7 @@ func TestSignatureLocal(t *testing.T) {
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address:      address,
-		LogLevel:     1,
-		LogVerbosity: 99,
+		Address: address,
 	})
 
 	require.Nil(t, err, "%+v", err)
@@ -56,9 +54,7 @@ func TestSignatureQingcloud(t *testing.T) {
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address:      address,
-		LogLevel:     1,
-		LogVerbosity: 99,
+		Address: address,
 	})
 
 	require.Nil(t, err, "%+v", err)
@@ -91,9 +87,7 @@ func TestUsersLocal(t *testing.T) {
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address:      address,
-		LogLevel:     1,
-		LogVerbosity: 99,
+		Address: address,
 	})
 
 	require.Nil(t, err, "%+v", err)
@@ -109,9 +103,9 @@ func TestUsersLocal(t *testing.T) {
 
 	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
-		Users:     []string{"usr-iDMTmjGs"},
+		Users:     []string{"usr-iDMTmjGs", "123", "456"},
 		Offset:    0,
-		Limit:     1,
+		Limit:     20,
 		ReqSource: "local",
 	})
 
@@ -127,9 +121,7 @@ func TestUsersQingcloud(t *testing.T) {
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address:      address,
-		LogLevel:     1,
-		LogVerbosity: 99,
+		Address: address,
 	})
 
 	require.Nil(t, err, "%+v", err)
@@ -145,9 +137,9 @@ func TestUsersQingcloud(t *testing.T) {
 
 	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
-		Users:     []string{"usr-iDMTmjGs"},
+		Users:     []string{"usr-iDMTmjGs", "123", "456"},
 		Offset:    0,
-		Limit:     1,
+		Limit:     3,
 		ReqSource: "qingcloud",
 	})
 

@@ -1,4 +1,4 @@
-package pkg
+package qingcloud
 
 import (
 	"fmt"
@@ -23,9 +23,10 @@ type User struct {
 	Role          string `json:"role" name:"role"`
 	Currency      string `json:"currency" name:"currency"`
 	GravatarEmail string `json:"gravatar_email" name:"gravatar_email"`
+	Privilege     int32  `json:"privilege" name:"privilege"`
 }
 
-func (u User) ToUserReply() *accountpb.User {
+func (u *User) ToUserReply() *accountpb.User {
 	return &accountpb.User{
 		UserId:        u.UserID,
 		UserName:      u.UserName,
@@ -36,6 +37,7 @@ func (u User) ToUserReply() *accountpb.User {
 		Role:          u.Role,
 		Currency:      u.Currency,
 		GravatarEmail: u.GravatarEmail,
+		Privilege:     u.Privilege,
 	}
 }
 

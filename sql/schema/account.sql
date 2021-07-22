@@ -10,6 +10,7 @@ CREATE TABLE `user` (
     `role` VARCHAR(50) NOT NULL,
     `currency` VARCHAR(10) DEFAULT 'cny' NOT NULL,
     `gravatar_email` VARCHAR(255) DEFAULT '' NOT NULL,
+    `privilege` INTEGER DEFAULT 1 NOT NULL,
     `create_time` BIGINT(20) UNSIGNED NOT NULL,
     `status_time` BIGINT(20) UNSIGNED NOT NULL,
 

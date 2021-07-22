@@ -17,13 +17,14 @@ type User struct {
 	Role          string `gorm:"column:role;"`
 	Currency      string `gorm:"column:currency;"`
 	GravatarEmail string `gorm:"column:gravatar_email;"`
+	Privilege     int32  `gorm:column:privilege;"`
 }
 
 func (u User) TableName() string {
 	return constants.UserTableName
 }
 
-func (u User) ToUserReply() *accountpb.User {
+func (u *User) ToUserReply() *accountpb.User {
 	return &accountpb.User{
 		UserId:        u.UserID,
 		UserName:      u.UserName,
@@ -34,6 +35,7 @@ func (u User) ToUserReply() *accountpb.User {
 		Role:          u.Role,
 		Currency:      u.Currency,
 		GravatarEmail: u.GravatarEmail,
+		Privilege:     u.Privilege,
 	}
 }
 

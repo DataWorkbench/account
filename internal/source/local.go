@@ -18,7 +18,7 @@ func (l *Local) GetSecretAccessKey(accessKeyID string) (*executor.AccessKey, err
 		return nil, err
 	}
 	if len(accessKeys) != 1 {
-		return nil, qerror.AccessKeyNotExist.Format(accessKeyID)
+		return nil, qerror.AccessKeyNotExists.Format(accessKeyID)
 	}
 	return accessKeys[0], nil
 }

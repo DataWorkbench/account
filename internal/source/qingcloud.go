@@ -3,7 +3,7 @@ package source
 import (
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/account/executor"
-	"github.com/DataWorkbench/account/pkg"
+	"github.com/DataWorkbench/account/internal/qingcloud"
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/qerror"
 	qConfig "github.com/yunify/qingcloud-sdk-go/config"
@@ -39,7 +39,7 @@ func (q *Qingcloud) GetSecretAccessKey(accessKeyID string) (*executor.AccessKey,
 		return nil, err
 	}
 	if len(resp.AccessKeySet) != 1 || *(resp.AccessKeySet[0].Status) != constants.QingcloudAccessKeyStatusActive {
-		return nil, qerror.AccessKeyNotExist.Format(accessKeyID)
+		return nil, qerror.AccessKeyNotExists.Format(accessKeyID)
 	}
 	return &executor.AccessKey{
 		AccessKeyID:     *resp.AccessKeySet[0].AccessKeyID,
@@ -62,12 +62,12 @@ func (q *Qingcloud) DescribeUsers(userIDs []string, limit int, offset int) ([]Us
 	if err != nil {
 		return nil, 0, err
 	}
-	users := make([]*string, len(userIDs))
-	for index, user := range userIDs {
-		users[index] = &user
+	var users []*string
+	for i := 0; i < len(userIDs); i++ {
+		users = append(users, &userIDs[i])
 	}
-	userSvc := &pkg.UserService{Config: qSvc.Config, Properties: &pkg.UserServiceProperties{Zone: &qCfg.Zone}}
-	resp, err := userSvc.DescribeUsers(&pkg.DescribeUsersInput{
+	userSvc := &qingcloud.UserService{Config: qSvc.Config, Properties: &qingcloud.UserServiceProperties{Zone: &qCfg.Zone}}
+	resp, err := userSvc.DescribeUsers(&qingcloud.DescribeUsersInput{
 		Users:  users,
 		Limit:  &limit,
 		Offset: &offset,
@@ -75,7 +75,7 @@ func (q *Qingcloud) DescribeUsers(userIDs []string, limit int, offset int) ([]Us
 	if err != nil {
 		return nil, 0, err
 	}
-	iUsers := make([]User, len(users))
+	iUsers := make([]User, len(resp.UserSet))
 	for i, u := range resp.UserSet {
 		iUsers[i] = u
 	}
