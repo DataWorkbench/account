@@ -17,7 +17,7 @@ type User struct {
 	Role          string `gorm:"column:role;"`
 	Currency      string `gorm:"column:currency;"`
 	GravatarEmail string `gorm:"column:gravatar_email;"`
-	Privilege     int32  `gorm:column:privilege;"`
+	Privilege     int32  `gorm:"column:privilege;"`
 }
 
 func (u User) TableName() string {
