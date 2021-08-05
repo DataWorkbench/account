@@ -38,6 +38,7 @@ type Config struct {
 	MySQL           *gormwrap.MySQLConfig  `json:"mysql"          yaml:"mysql"          env:"MYSQL"               validate:"required"`
 	Redis           *rediswrap.RedisConfig `json:"redis"          yaml:"redis"          env:"REDIS"               validate:"required"`
 	QingcloudConfig *QingcloudConfig       `json:"qingcloud_config"      yaml:"qingcloud_config"      env:"QINGCLOUD_CONFIG"           validate:"required"`
+	Source          string                 `json:"source"      yaml:"source"      env:"SOURCE" validate:"required"`
 }
 
 func loadFromFile(cfg *Config) (err error) {

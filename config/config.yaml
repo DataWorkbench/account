@@ -38,3 +38,5 @@ qingcloud_config:
   port: 7777
   protocol: "http"
   uri: "/iaas"
+
+source: "qingcloud"

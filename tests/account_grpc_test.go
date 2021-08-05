@@ -14,6 +14,40 @@ import (
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
 )
 
+func TestSignatureWithDefaultSource(t *testing.T) {
+	address := "127.0.0.1:9595"
+	lp := glog.NewDefault()
+	ctx := glog.WithContext(context.Background(), lp)
+	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+		Address: address,
+	})
+
+	require.Nil(t, err, "%+v", err)
+
+	client := accountpb.NewAccountClient(conn)
+	logger := glog.NewDefault()
+
+	worker := idgenerator.New("")
+	reqId, _ := worker.Take()
+
+	ln := logger.Clone()
+	ln.WithFields().AddString("rid", reqId)
+
+	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+		ReqMethod:      "GET",
+		ReqPath:        "/iaas",
+		ReqQueryString: "access_key_id=IKSMDBWVIECPIVNDYZAB&access_keys.1=IKSMDBWVIECPIVNDYZAB&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
+		ReqBody:        "",
+		ReqSignature:   "HwCwQys3ea8RW70JJia2WsFZ2e4fZGAkqOk%2F9BiXSsk%3D",
+		ReqAccessKeyId: "IKSMDBWVIECPIVNDYZAB",
+	})
+	if err != nil {
+		fmt.Printf("error message: %s", err.Error())
+	}
+	require.Nil(t, err, "%+v", err)
+}
+
 func TestSignatureLocal(t *testing.T) {
 	address := "127.0.0.1:9595"
 	lp := glog.NewDefault()
@@ -80,6 +114,39 @@ func TestSignatureQingcloud(t *testing.T) {
 	})
 	require.Nil(t, err, "%+v", err)
 
+}
+
+func TestUsersWithDefaultSource(t *testing.T) {
+	address := "127.0.0.1:9595"
+	lp := glog.NewDefault()
+	ctx := glog.WithContext(context.Background(), lp)
+	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+		Address: address,
+	})
+
+	require.Nil(t, err, "%+v", err)
+
+	client := accountpb.NewAccountClient(conn)
+	logger := glog.NewDefault()
+
+	worker := idgenerator.New("")
+	reqId, _ := worker.Take()
+
+	ln := logger.Clone()
+	ln.WithFields().AddString("rid", reqId)
+
+	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
+		Users:  []string{"usr-iDMTmjGs", "123", "456"},
+		Offset: 0,
+		Limit:  20,
+	})
+
+	if result != nil {
+		ln.Info().String("receive Users ", result.String()).Fire()
+	}
+
+	require.Nil(t, err, "%+v", err)
 }
 
 func TestUsersLocal(t *testing.T) {
