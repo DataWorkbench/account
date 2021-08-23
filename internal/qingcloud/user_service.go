@@ -14,16 +14,18 @@ var _ fmt.State
 var _ time.Time
 
 type User struct {
-	UserID        string `json:"user_id" name:"user_id"`
-	UserName      string `json:"user_name" name:"user_name"`
-	Lang          string `json:"lang" name:"lang"`
-	Email         string `json:"email" name:"email"`
-	Phone         string `json:"phone" name:"phone"`
-	Status        string `json:"status" name:"status"`
-	Role          string `json:"role" name:"role"`
-	Currency      string `json:"currency" name:"currency"`
-	GravatarEmail string `json:"gravatar_email" name:"gravatar_email"`
-	Privilege     int32  `json:"privilege" name:"privilege"`
+	UserID        string   `json:"user_id" name:"user_id"`
+	UserName      string   `json:"user_name" name:"user_name"`
+	Lang          string   `json:"lang" name:"lang"`
+	Email         string   `json:"email" name:"email"`
+	Phone         string   `json:"phone" name:"phone"`
+	Status        string   `json:"status" name:"status"`
+	Role          string   `json:"role" name:"role"`
+	Currency      string   `json:"currency" name:"currency"`
+	GravatarEmail string   `json:"gravatar_email" name:"gravatar_email"`
+	Privilege     int32    `json:"privilege" name:"privilege"`
+	Zones         []string `json:"zones" name:"zones"`
+	Regions       []string `json:"regions" name:"regions"`
 }
 
 func (u *User) ToUserReply() *accountpb.User {
@@ -38,6 +40,8 @@ func (u *User) ToUserReply() *accountpb.User {
 		Currency:      u.Currency,
 		GravatarEmail: u.GravatarEmail,
 		Privilege:     u.Privilege,
+		Zones:         u.Zones,
+		Regions:       u.Regions,
 	}
 }
 

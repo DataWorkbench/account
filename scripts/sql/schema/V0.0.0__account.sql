@@ -11,6 +11,8 @@ CREATE TABLE `user` (
     `currency` VARCHAR(10) DEFAULT 'cny' NOT NULL,
     `gravatar_email` VARCHAR(255) DEFAULT '' NOT NULL,
     `privilege` INTEGER DEFAULT 1 NOT NULL,
+    `zones` TEXT ,
+    `regions` TEXT ,
     `create_time` BIGINT(20) UNSIGNED NOT NULL,
     `status_time` BIGINT(20) UNSIGNED NOT NULL,
 

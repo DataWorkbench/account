@@ -3,8 +3,10 @@ package handler
 import (
 	"context"
 	"crypto/hmac"
+	"crypto/md5"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"net/url"
 	"strings"
 
@@ -28,7 +30,9 @@ func ValidateRequestSignature(ctx context.Context, req *accountpb.ValidateReques
 	if err != nil {
 		return nil, err
 	}
-	stringToSign := strings.ToUpper(req.ReqMethod) + "\n" + req.ReqPath + "\n" + req.ReqQueryString
+	h := md5.New()
+	h.Write([]byte(req.ReqBody))
+	stringToSign := strings.ToUpper(req.ReqMethod) + "\n" + req.ReqPath + "\n" + req.ReqQueryString + "\n" + hex.EncodeToString(h.Sum(nil))
 	signature := CalculateSignature(stringToSign, secretAccessKey.SecretAccessKey)
 	if signature != req.ReqSignature {
 		logger.Info().String(qerror.ValidateSignatureFailed.Format(req.ReqSignature, signature).String(), "").Fire()

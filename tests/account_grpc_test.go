@@ -15,7 +15,7 @@ import (
 )
 
 func TestSignatureWithDefaultSource(t *testing.T) {
-	address := "127.0.0.1:9595"
+	address := "127.0.0.1:9110"
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
@@ -49,7 +49,7 @@ func TestSignatureWithDefaultSource(t *testing.T) {
 }
 
 func TestSignatureLocal(t *testing.T) {
-	address := "127.0.0.1:9595"
+	address := "127.0.0.1:9110"
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
@@ -84,7 +84,7 @@ func TestSignatureLocal(t *testing.T) {
 }
 
 func TestSignatureQingcloud(t *testing.T) {
-	address := "127.0.0.1:9595"
+	address := "127.0.0.1:9110"
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
@@ -105,11 +105,22 @@ func TestSignatureQingcloud(t *testing.T) {
 	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqMethod:      "GET",
-		ReqPath:        "/iaas",
-		ReqQueryString: "access_key_id=IKSMDBWVIECPIVNDYZAB&access_keys.1=IKSMDBWVIECPIVNDYZAB&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
-		ReqBody:        "",
-		ReqSignature:   "HwCwQys3ea8RW70JJia2WsFZ2e4fZGAkqOk%2F9BiXSsk%3D",
-		ReqAccessKeyId: "IKSMDBWVIECPIVNDYZAB",
+		ReqPath:        "/staging/v1/workspace/",
+		ReqQueryString: "access_key_id=DVNLJJACEWKCWZHJEZVX&limit=10&offset=0&owner=usr-dhR2f1DM&service=bigdata&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-18T08%3A55%3A46Z&timestamp=2021-08-18T08%3A55%3A46Z&version=1",
+		ReqBody:        "null",
+		ReqSignature:   "xwd%2BbqeqwQkMrBVaGbQ1yBdm0F6Y198vf1dHnUp0Uj4%3D",
+		ReqAccessKeyId: "DVNLJJACEWKCWZHJEZVX",
+		ReqSource:      "qingcloud",
+	})
+	require.Nil(t, err, "%+v", err)
+
+	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+		ReqMethod:      "PUT",
+		ReqPath:        "/staging/v1/workspace/wks-0123456789012345/",
+		ReqQueryString: "access_key_id=DVNLJJACEWKCWZHJEZVX&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-23T08%3A07%3A05Z&timestamp=2021-08-23T08%3A07%3A05Z&version=1",
+		ReqBody:        "{\"owner\":\"usr-dhR2f1DM\",\"name\":\"lzz\",\"service\":\"bigdata\",\"desc\":\"lzz112\"}",
+		ReqSignature:   "TJmbQuNdLWOPhADJIqL4LVoIDogwP8GB2dQb9NVrM%2FA%3D",
+		ReqAccessKeyId: "DVNLJJACEWKCWZHJEZVX",
 		ReqSource:      "qingcloud",
 	})
 	require.Nil(t, err, "%+v", err)
@@ -117,7 +128,7 @@ func TestSignatureQingcloud(t *testing.T) {
 }
 
 func TestUsersWithDefaultSource(t *testing.T) {
-	address := "127.0.0.1:9595"
+	address := "127.0.0.1:9110"
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
@@ -137,7 +148,7 @@ func TestUsersWithDefaultSource(t *testing.T) {
 
 	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
-		Users:  []string{"usr-iDMTmjGs", "123", "456"},
+		Users:  []string{"usr-dhR2f1DM", "123", "456"},
 		Offset: 0,
 		Limit:  20,
 	})
@@ -150,7 +161,7 @@ func TestUsersWithDefaultSource(t *testing.T) {
 }
 
 func TestUsersLocal(t *testing.T) {
-	address := "127.0.0.1:9595"
+	address := "127.0.0.1:9110"
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
@@ -184,7 +195,7 @@ func TestUsersLocal(t *testing.T) {
 }
 
 func TestUsersQingcloud(t *testing.T) {
-	address := "127.0.0.1:9595"
+	address := "127.0.0.1:9110"
 	lp := glog.NewDefault()
 	ctx := glog.WithContext(context.Background(), lp)
 	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
@@ -204,7 +215,7 @@ func TestUsersQingcloud(t *testing.T) {
 
 	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
-		Users:     []string{"usr-iDMTmjGs", "123", "456"},
+		Users:     []string{"usr-dhR2f1DM", "123", "456"},
 		Offset:    0,
 		Limit:     3,
 		ReqSource: "qingcloud",

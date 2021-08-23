@@ -2,6 +2,7 @@ package executor
 
 import (
 	"context"
+	"strings"
 
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
@@ -18,6 +19,8 @@ type User struct {
 	Currency      string `gorm:"column:currency;"`
 	GravatarEmail string `gorm:"column:gravatar_email;"`
 	Privilege     int32  `gorm:"column:privilege;"`
+	Zones         string `gorm:"column:zones;"`
+	Regions       string `gorm:"column:regions;"`
 }
 
 func (u User) TableName() string {
@@ -36,6 +39,8 @@ func (u *User) ToUserReply() *accountpb.User {
 		Currency:      u.Currency,
 		GravatarEmail: u.GravatarEmail,
 		Privilege:     u.Privilege,
+		Zones:         strings.Split(u.Zones, ","),
+		Regions:       strings.Split(u.Regions, ","),
 	}
 }
 
