@@ -73,7 +73,7 @@ func TestSignatureLocal(t *testing.T) {
 		ReqPath:        "/iaas",
 		ReqQueryString: "access_key_id=IKSMDBWVIECPIVNDYZAB&access_keys.1=IKSMDBWVIECPIVNDYZAB&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
 		ReqBody:        "",
-		ReqSignature:   "HwCwQys3ea8RW70JJia2WsFZ2e4fZGAkqOk%2F9BiXSsk%3D",
+		ReqSignature:   "HhscGZcG6xgEME6sGwjbfb9KodcvF4WuJKRP1W3Z16Q%3D",
 		ReqAccessKeyId: "IKSMDBWVIECPIVNDYZAB",
 		ReqSource:      "local",
 	})
