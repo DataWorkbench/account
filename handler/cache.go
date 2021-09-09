@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
@@ -13,18 +14,17 @@ import (
 )
 
 type Cache struct {
-	rdb              *redis.Client
-	cacheEnable      map[string]bool
-	userPrefixKeyMap map[string]string
-	ctx              context.Context
+	rdb         *redis.Client
+	cacheEnable map[string]bool
+	ctx         context.Context
 }
 
-func (cache *Cache) set(key string, value interface{}) error {
+func (cache *Cache) set(key string, value interface{}, expiration time.Duration) error {
 	jsonString, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
-	_, err = cache.rdb.SetNX(cache.ctx, key, jsonString, time.Second*time.Duration(rand.Intn(constants.ResourceCacheRandomSeconds)+constants.ResourceCacheMinimumSeconds)).Result()
+	_, err = cache.rdb.SetNX(cache.ctx, key, jsonString, expiration).Result()
 	if err != nil {
 		return err
 	}
@@ -32,15 +32,15 @@ func (cache *Cache) set(key string, value interface{}) error {
 }
 
 func (cache *Cache) get(key string, value interface{}) error {
-	jsonUser, err := cache.rdb.Get(cache.ctx, key).Bytes()
+	jsonValue, err := cache.rdb.Get(cache.ctx, key).Bytes()
 	if err != nil {
 		return err
 	}
-	if len(jsonUser) == 0 {
+	if len(jsonValue) == 0 {
 		return qerror.ResourceNotExists
 	}
 
-	if err = json.Unmarshal(jsonUser, value); err != nil {
+	if err = json.Unmarshal(jsonValue, value); err != nil {
 		return err
 	}
 	return nil
@@ -56,18 +56,7 @@ func (cache *Cache) IsEnable(source string) bool {
 }
 
 func (cache *Cache) GetPrefixKey(source string, resource string) string {
-	var prefixKeyMap map[string]string
-	switch resource {
-	case constants.UserTableName:
-		prefixKeyMap = cache.userPrefixKeyMap
-	default:
-		prefixKeyMap = map[string]string{}
-	}
-	prefixKey, ok := prefixKeyMap[source]
-	if !ok {
-		return ""
-	}
-	return prefixKey
+	return constants.Account + constants.RedisSeparator + source + constants.RedisSeparator + resource + constants.RedisSeparator
 }
 
 func (cache *Cache) CacheUsers(users []*accountpb.User, source string) error {
@@ -84,8 +73,7 @@ func (cache *Cache) CacheUser(u *accountpb.User, userID string, source string) e
 		return cache.CacheNotExistUser(userID, source)
 	}
 	prefixKey := cache.GetPrefixKey(source, constants.UserTableName)
-	return cache.set(prefixKey+userID, u)
-
+	return cache.set(prefixKey+userID, u, time.Second*time.Duration(constants.UserCacheBaseSeconds+rand.Intn(constants.UserCacheRandomSeconds)))
 }
 
 func (cache *Cache) CacheNotExistUser(userID string, source string) error {
@@ -97,30 +85,7 @@ func (cache *Cache) CacheNotExistUser(userID string, source string) error {
 	return nil
 }
 
-func (cache *Cache) GetCachedUsers(userIds []string, source string) ([]*accountpb.User, []string, []string, error) {
-	uncachedUsers := []string{}
-	cachedUsers := []*accountpb.User{}
-	notExistsUsers := []string{}
-	for i := 0; i < len(userIds); i++ {
-		user, err := cache.GetCachedUser(userIds[i], source)
-		if err != nil {
-			if err == qerror.ResourceNotExists {
-				logger.Warn().String("User ID not exists", userIds[i]).Fire()
-				notExistsUsers = append(notExistsUsers, userIds[i])
-				continue
-			}
-			return nil, []string{}, []string{}, err
-		}
-		if user != nil {
-			cachedUsers = append(cachedUsers, user)
-		} else {
-			uncachedUsers = append(uncachedUsers, userIds[i])
-		}
-	}
-	return cachedUsers, uncachedUsers, notExistsUsers, nil
-}
-
-func (cache *Cache) GetCachedUser(userID string, source string) (*accountpb.User, error) {
+func (cache *Cache) GetUser(userID string, source string) (*accountpb.User, error) {
 	prefixKey := cache.GetPrefixKey(source, constants.UserTableName)
 	var user accountpb.User
 	err := cache.get(prefixKey+userID, &user)
@@ -131,4 +96,35 @@ func (cache *Cache) GetCachedUser(userID string, source string) (*accountpb.User
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (cache *Cache) CacheAccessKey(k *executor.AccessKey, accessKeyID string, source string) error {
+	if k == nil {
+		return cache.CacheNotExistAccessKey(accessKeyID, source)
+	}
+	prefixKey := cache.GetPrefixKey(source, constants.AccessKeyTableName)
+	return cache.set(prefixKey+accessKeyID, k, time.Second*time.Duration(constants.AccessKeyCacheBaseSeconds))
+
+}
+
+func (cache *Cache) CacheNotExistAccessKey(accessKeyID string, source string) error {
+	prefixKey := cache.GetPrefixKey(source, constants.AccessKeyTableName)
+	_, err := cache.rdb.SetNX(cache.ctx, prefixKey+accessKeyID, nil, time.Second*time.Duration(constants.NotExistResourceCacheSeconds)).Result()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cache *Cache) GetAccessKey(accessKeyID string, source string) (*executor.AccessKey, error) {
+	prefixKey := cache.GetPrefixKey(source, constants.AccessKeyTableName)
+	var accessKey executor.AccessKey
+	err := cache.get(prefixKey+accessKeyID, &accessKey)
+	if err != nil {
+		if err == redis.Nil {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &accessKey, nil
 }

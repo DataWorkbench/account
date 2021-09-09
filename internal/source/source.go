@@ -19,9 +19,6 @@ type Source interface {
 }
 
 func SelectSource(source string, conf *config.Config, ctx context.Context) Source {
-	if source == "" {
-		source = executor.AccountExecutor.GetConf().Source
-	}
 	switch source {
 	case constants.QingcloudSource:
 		return &Qingcloud{

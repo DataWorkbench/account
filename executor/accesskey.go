@@ -7,15 +7,15 @@ import (
 )
 
 type AccessKey struct {
-	AccessKeyID     string `gorm:"column:access_key_id;"`
-	AccessKeyName   string `gorm:"column:access_key_name;"`
-	SecretAccessKey string `gorm:"column:secret_access_key;"`
-	Description     string `gorm:"column:description;"`
-	Owner           string `gorm:"column:owner;"`
-	Status          string `gorm:"column:status;"`
-	IPWhiteList     string `gorm:"column:ip_white_list;"`
-	CreateTime      int64  `gorm:"column:create_time;"`
-	StatusTime      int64  `gorm:"column:status_time;"`
+	AccessKeyID     string `gorm:"column:access_key_id;" json:"access_key_id"`
+	AccessKeyName   string `gorm:"column:access_key_name;" json:"access_key_name"`
+	SecretAccessKey string `gorm:"column:secret_access_key;" json:"secret_access_key"`
+	Description     string `gorm:"column:description;" json:"description"`
+	Owner           string `gorm:"column:owner;" json:"owner"`
+	Status          string `gorm:"column:status;" json:"status"`
+	IPWhiteList     string `gorm:"column:ip_white_list;" json:"ip_white_list"`
+	CreateTime      int64  `gorm:"column:create_time;" json:"create_time"`
+	StatusTime      int64  `gorm:"column:status_time;" json:"status_time"`
 }
 
 func (k AccessKey) TableName() string {

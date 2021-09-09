@@ -39,7 +39,7 @@ func (q *Qingcloud) GetSecretAccessKey(accessKeyID string) (*executor.AccessKey,
 		return nil, err
 	}
 	if len(resp.AccessKeySet) != 1 || *(resp.AccessKeySet[0].Status) != constants.QingcloudAccessKeyStatusActive {
-		return nil, qerror.AccessKeyNotExists.Format(accessKeyID)
+		return nil, qerror.ResourceNotExists
 	}
 	return &executor.AccessKey{
 		AccessKeyID:     *resp.AccessKeySet[0].AccessKeyID,

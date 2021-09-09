@@ -4,14 +4,46 @@ import (
 	"context"
 	"strings"
 
+	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/account/internal/source"
+	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
 )
 
-func DescribeUsers(ctx context.Context, req *accountpb.DescribeUsersRequest) ([]*accountpb.User, int64, error) {
-	cachedUsers, uncachedUsers, notExistsUsers, err := cache.GetCachedUsers(req.Users, req.ReqSource)
+func getUsers(userIds []string, source string) ([]*accountpb.User, []string, []string, error) {
+	uncachedUsers := []string{}
+	cachedUsers := []*accountpb.User{}
+	notExistsUsers := []string{}
+	for i := 0; i < len(userIds); i++ {
+		user, err := cache.GetUser(userIds[i], source)
+		if err != nil {
+			if err == qerror.ResourceNotExists {
+				notExistsUsers = append(notExistsUsers, userIds[i])
+				continue
+			}
+			return nil, []string{}, []string{}, err
+		}
+		if user != nil {
+			cachedUsers = append(cachedUsers, user)
+		} else {
+			uncachedUsers = append(uncachedUsers, userIds[i])
+		}
+	}
+	cachedUserIds := []string{}
+	for i := 0; i < len(cachedUsers); i++ {
+		cachedUserIds = append(cachedUserIds, cachedUsers[i].UserId)
+	}
+	logger.Debug().String("cachedUsers", strings.Join(cachedUserIds, ",")).Fire()
 	logger.Debug().String("uncachedUsers", strings.Join(uncachedUsers, ",")).Fire()
 	logger.Debug().String("notExistsUsers", strings.Join(notExistsUsers, ",")).Fire()
+	return cachedUsers, uncachedUsers, notExistsUsers, nil
+}
+
+func DescribeUsers(ctx context.Context, req *accountpb.DescribeUsersRequest) ([]*accountpb.User, int64, error) {
+	if req.ReqSource == "" {
+		req.ReqSource = executor.AccountExecutor.GetConf().Source
+	}
+	cachedUsers, uncachedUsers, notExistsUsers, err := getUsers(req.Users, req.ReqSource)
 	if err != nil {
 		return nil, 0, err
 	}

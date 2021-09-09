@@ -7,7 +7,7 @@ import (
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
 )
 
-// WorkspaceServer implements grpc server Interface accountpb.AccountServer
+// AccountServer implements grpc server Interface accountpb.AccountServer
 type AccountServer struct {
 	accountpb.UnimplementedAccountServer
 }

@@ -38,10 +38,6 @@ func WithRedis(r *redis.Client, ctx context.Context) Option {
 				constants.QingcloudSource: true,
 				constants.LocalSource:     true,
 			},
-			userPrefixKeyMap: map[string]string{
-				constants.QingcloudSource: constants.QingcloudUserPrefix,
-				constants.LocalSource:     constants.LocalUserPrefix,
-			},
 			ctx: ctx,
 		}
 	}
