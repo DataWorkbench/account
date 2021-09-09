@@ -28,7 +28,7 @@ mysql:
 
 redis:
   hosts: "127.0.0.1:6379"
-  password: ""
+  password: "password"
   database: 0
 
 qingcloud_config:
