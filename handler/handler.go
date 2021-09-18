@@ -5,8 +5,8 @@ import (
 
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/common/constants"
+	"github.com/DataWorkbench/common/rediswrap"
 	"github.com/DataWorkbench/glog"
-	"github.com/go-redis/redis/v8"
 )
 
 // global options in this package.
@@ -30,7 +30,7 @@ func WithLogger(log *glog.Logger) Option {
 	}
 }
 
-func WithRedis(r *redis.Client, ctx context.Context) Option {
+func WithRedis(r rediswrap.Client, ctx context.Context) Option {
 	return func() {
 		cache = &Cache{
 			rdb: r,

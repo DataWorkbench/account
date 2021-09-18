@@ -18,7 +18,6 @@ import (
 	"github.com/DataWorkbench/common/utils/buildinfo"
 	"github.com/DataWorkbench/glog"
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
-	"github.com/go-redis/redis/v8"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
@@ -42,7 +41,7 @@ func Start() (err error) {
 		db           *gorm.DB
 		rpcServer    *grpcwrap.Server
 		metricServer *metrics.Server
-		rdb          *redis.Client
+		rdb          rediswrap.Client
 	)
 
 	defer func() {

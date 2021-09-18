@@ -9,12 +9,13 @@ import (
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/qerror"
+	"github.com/DataWorkbench/common/rediswrap"
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
 	"github.com/go-redis/redis/v8"
 )
 
 type Cache struct {
-	rdb         *redis.Client
+	rdb         rediswrap.Client
 	cacheEnable map[string]bool
 	ctx         context.Context
 }
