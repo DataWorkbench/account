@@ -3,6 +3,8 @@ package tests
 import (
 	"context"
 	"fmt"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/DataWorkbench/glog"
@@ -13,6 +15,12 @@ import (
 
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
 )
+
+func sortReqQueryString(query string) string {
+	queryList := strings.Split(query, "&")
+	sort.Strings(queryList)
+	return strings.Join(queryList, "&")
+}
 
 func TestSignatureLocalWithNotExistKey(t *testing.T) {
 	address := "127.0.0.1:9110"
@@ -72,7 +80,7 @@ func TestSignatureQingcloudWithNotExistKey(t *testing.T) {
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqMethod:      "GET",
 		ReqPath:        "/staging/v1/workspace/",
-		ReqQueryString: "access_key_id=NOTEXISTKEY&limit=10&offset=0&owner=usr-dhR2f1DM&service=bigdata&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-18T08%3A55%3A46Z&timestamp=2021-08-18T08%3A55%3A46Z&version=1",
+		ReqQueryString: "access_key_id=NOTEXISTKEY&limit=10&offset=0&owner=usr-CVIshpN1&service=bigdata&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-18T08%3A55%3A46Z&timestamp=2021-08-18T08%3A55%3A46Z&version=1",
 		ReqBody:        "null",
 		ReqSignature:   "xwd%2BbqeqwQkMrBVaGbQ1yBdm0F6Y198vf1dHnUp0Uj4%3D",
 		ReqAccessKeyId: "NOTEXISTKEY",
@@ -109,20 +117,20 @@ func TestSignatureWithDefaultSource(t *testing.T) {
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqMethod:      "GET",
 		ReqPath:        "/staging/v1/workspace/",
-		ReqQueryString: "access_key_id=DVNLJJACEWKCWZHJEZVX&limit=10&offset=0&owner=usr-dhR2f1DM&service=bigdata&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-18T08%3A55%3A46Z&timestamp=2021-08-18T08%3A55%3A46Z&version=1",
+		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&reverse=True&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&sort_by=created&version=1&limit=10&offset=0&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
 		ReqBody:        "null",
-		ReqSignature:   "xwd%2BbqeqwQkMrBVaGbQ1yBdm0F6Y198vf1dHnUp0Uj4%3D",
-		ReqAccessKeyId: "DVNLJJACEWKCWZHJEZVX",
+		ReqSignature:   "UIXVtLYN2MioTSzxdqranwqB%2BO4VHWZ7yFIiSr%2FGNqQ%3D",
+		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
 	})
 	require.Nil(t, err, "%+v", err)
 
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
-		ReqMethod:      "PUT",
-		ReqPath:        "/staging/v1/workspace/wks-0123456789012345/",
-		ReqQueryString: "access_key_id=DVNLJJACEWKCWZHJEZVX&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-23T08%3A07%3A05Z&timestamp=2021-08-23T08%3A07%3A05Z&version=1",
-		ReqBody:        "{\"owner\":\"usr-dhR2f1DM\",\"name\":\"lzz\",\"service\":\"bigdata\",\"desc\":\"lzz112\"}",
-		ReqSignature:   "TJmbQuNdLWOPhADJIqL4LVoIDogwP8GB2dQb9NVrM%2FA%3D",
-		ReqAccessKeyId: "DVNLJJACEWKCWZHJEZVX",
+	ReqMethod:      "GET",
+	ReqPath:        "/api/region/",
+	ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
+	ReqBody:        "null",
+	ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
+	ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
 	})
 	require.Nil(t, err, "%+v", err)
 }
@@ -181,26 +189,25 @@ func TestSignatureQingcloud(t *testing.T) {
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
 
-	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqMethod:      "GET",
 		ReqPath:        "/staging/v1/workspace/",
-		ReqQueryString: "access_key_id=DVNLJJACEWKCWZHJEZVX&limit=10&offset=0&owner=usr-dhR2f1DM&service=bigdata&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-18T08%3A55%3A46Z&timestamp=2021-08-18T08%3A55%3A46Z&version=1",
+		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&reverse=True&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&sort_by=created&version=1&limit=10&offset=0&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
 		ReqBody:        "null",
-		ReqSignature:   "xwd%2BbqeqwQkMrBVaGbQ1yBdm0F6Y198vf1dHnUp0Uj4%3D",
-		ReqAccessKeyId: "DVNLJJACEWKCWZHJEZVX",
+		ReqSignature:   "UIXVtLYN2MioTSzxdqranwqB%2BO4VHWZ7yFIiSr%2FGNqQ%3D",
+		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
 		ReqSource:      "qingcloud",
 	})
 	require.Nil(t, err, "%+v", err)
 
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
-		ReqMethod:      "PUT",
-		ReqPath:        "/staging/v1/workspace/wks-0123456789012345/",
-		ReqQueryString: "access_key_id=DVNLJJACEWKCWZHJEZVX&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-23T08%3A07%3A05Z&timestamp=2021-08-23T08%3A07%3A05Z&version=1",
-		ReqBody:        "{\"owner\":\"usr-dhR2f1DM\",\"name\":\"lzz\",\"service\":\"bigdata\",\"desc\":\"lzz112\"}",
-		ReqSignature:   "TJmbQuNdLWOPhADJIqL4LVoIDogwP8GB2dQb9NVrM%2FA%3D",
-		ReqAccessKeyId: "DVNLJJACEWKCWZHJEZVX",
-		ReqSource:      "qingcloud",
+	ReqMethod:      "GET",
+	ReqPath:        "/api/region/",
+	ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
+	ReqBody:        "null",
+	ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
+	ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
+	ReqSource:      "qingcloud",
 	})
 	require.Nil(t, err, "%+v", err)
 
@@ -227,7 +234,7 @@ func TestUsersWithDefaultSource(t *testing.T) {
 
 	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
-		Users:  []string{"usr-dhR2f1DM", "usr-notexist1", "usr-notexist2"},
+		Users:  []string{"usr-CVIshpN1", "usr-notexist1", "usr-notexist2"},
 		Offset: 0,
 		Limit:  20,
 	})
@@ -294,7 +301,7 @@ func TestUsersQingcloud(t *testing.T) {
 
 	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
-		Users:     []string{"usr-dhR2f1DM", "usr-notexist1", "usr-notexist2"},
+		Users:     []string{"usr-CVIshpN1", "usr-notexist1", "usr-notexist2"},
 		Offset:    0,
 		Limit:     3,
 		ReqSource: "qingcloud",
