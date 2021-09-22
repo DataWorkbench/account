@@ -125,12 +125,12 @@ func TestSignatureWithDefaultSource(t *testing.T) {
 	require.Nil(t, err, "%+v", err)
 
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
-	ReqMethod:      "GET",
-	ReqPath:        "/api/region/",
-	ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
-	ReqBody:        "null",
-	ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
-	ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
+		ReqMethod:      "GET",
+		ReqPath:        "/api/region/",
+		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
+		ReqBody:        "null",
+		ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
+		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
 	})
 	require.Nil(t, err, "%+v", err)
 }
@@ -201,13 +201,13 @@ func TestSignatureQingcloud(t *testing.T) {
 	require.Nil(t, err, "%+v", err)
 
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
-	ReqMethod:      "GET",
-	ReqPath:        "/api/region/",
-	ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
-	ReqBody:        "null",
-	ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
-	ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
-	ReqSource:      "qingcloud",
+		ReqMethod:      "GET",
+		ReqPath:        "/api/region/",
+		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
+		ReqBody:        "null",
+		ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
+		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
+		ReqSource:      "qingcloud",
 	})
 	require.Nil(t, err, "%+v", err)
 
