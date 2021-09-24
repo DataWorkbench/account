@@ -33,6 +33,7 @@ redis:
   database: 0
   master_name: "mymaster"
   mode: "standalone"
+  password: "password"
 
 qingcloud_config:
   access_key_id: "NHYIAFWQGTUOYJAPQZTK"
