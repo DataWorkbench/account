@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/DataWorkbench/common/grpcwrap"
+	"github.com/DataWorkbench/common/gtrace"
 	"github.com/DataWorkbench/common/utils/idgenerator"
 
 	"github.com/DataWorkbench/gproto/pkg/accountpb"
@@ -40,8 +41,8 @@ func TestSignatureLocalWithNotExistKey(t *testing.T) {
 
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
-
-	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqMethod:      "GET",
 		ReqPath:        "/iaas",
@@ -76,7 +77,8 @@ func TestSignatureQingcloudWithNotExistKey(t *testing.T) {
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
 
-	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqMethod:      "GET",
 		ReqPath:        "/staging/v1/workspace/",
@@ -111,8 +113,8 @@ func TestSignatureWithDefaultSource(t *testing.T) {
 
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
-
-	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
 
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqMethod:      "GET",
@@ -153,8 +155,8 @@ func TestSignatureLocal(t *testing.T) {
 
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
-
-	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
 	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqMethod:      "GET",
 		ReqPath:        "/iaas",
@@ -231,8 +233,8 @@ func TestUsersWithDefaultSource(t *testing.T) {
 
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
-
-	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
 		Users:  []string{"usr-CVIshpN1", "usr-notexist1", "usr-notexist2"},
 		Offset: 0,
@@ -264,8 +266,8 @@ func TestUsersLocal(t *testing.T) {
 
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
-
-	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
 		Users:     []string{"usr-iDMTmjGs", "usr-notexist1", "usr-notexist2"},
 		Offset:    0,
@@ -298,8 +300,8 @@ func TestUsersQingcloud(t *testing.T) {
 
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
-
-	ctx = grpcwrap.ContextWithRequest(context.Background(), ln, reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
 	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
 		Users:     []string{"usr-CVIshpN1", "usr-notexist1", "usr-notexist2"},
 		Offset:    0,
