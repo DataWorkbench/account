@@ -37,3 +37,15 @@ func (s *AccountServer) DescribeUsers(ctx context.Context, req *accountpb.Descri
 	}
 	return reply, nil
 }
+
+func (s *AccountServer) DescribeAccessKey(ctx context.Context, req *accountpb.DescribeAccessKeyRequest) (*accountpb.DescribeAccessKeyReply, error) {
+	output, err := handler.DescribeAccessKey(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	reply := &accountpb.DescribeAccessKeyReply{
+		Owner:           output.Owner,
+		SecretAccessKey: output.SecretAccessKey,
+	}
+	return reply, nil
+}
