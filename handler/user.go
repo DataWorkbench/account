@@ -88,8 +88,7 @@ func DescribeUsers(ctx context.Context, req *accountpb.DescribeUsersRequest) ([]
 func DescribeAccessKey(ctx context.Context, input *accountpb.DescribeAccessKeyRequest) (output *executor.AccessKey, err error) {
 	output, err = getAccessKey(ctx, &accountpb.ValidateRequestSignatureRequest{
 		ReqAccessKeyId: input.AccessKeyId,
-		ReqSource:  cfg.Source,
-
+		ReqSource:      cfg.Source,
 	})
 	return
 }

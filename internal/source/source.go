@@ -22,7 +22,7 @@ func SelectSource(source string, conf *config.Config, ctx context.Context) Sourc
 	switch source {
 	case constants.QingcloudSource:
 		return &Qingcloud{
-			qingcloudConfig: executor.AccountExecutor.GetConf().QingcloudConfig,
+			qingcloudConfig: executor.AccountExecutor.GetConf().Qingcloud,
 		}
 	case constants.LocalSource:
 		return &Local{

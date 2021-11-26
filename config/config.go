@@ -8,6 +8,7 @@ import (
 
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/grpcwrap"
+	"github.com/DataWorkbench/common/gtrace"
 	"github.com/DataWorkbench/common/metrics"
 	"github.com/DataWorkbench/common/rediswrap"
 	"github.com/DataWorkbench/loader"
@@ -31,14 +32,15 @@ type QingcloudConfig struct {
 }
 
 type Config struct {
-	LogLevel        int8                   `json:"log_level"      yaml:"log_level"      env:"LOG_LEVEL,default=1" validate:"gte=1,lte=5"`
-	GRPCLog         *grpcwrap.LogConfig    `json:"grpc_log"       yaml:"grpc_log"       env:"GRPC_LOG"            validate:"required"`
-	GRPCServer      *grpcwrap.ServerConfig `json:"grpc_server"    yaml:"grpc_server"    env:"GRPC_SERVER"         validate:"required"`
-	MetricsServer   *metrics.Config        `json:"metrics_server" yaml:"metrics_server" env:"METRICS_SERVER"      validate:"required"`
-	MySQL           *gormwrap.MySQLConfig  `json:"mysql"          yaml:"mysql"          env:"MYSQL"               validate:"required"`
-	Redis           *rediswrap.RedisConfig `json:"redis"          yaml:"redis"          env:"REDIS"               validate:"required"`
-	QingcloudConfig *QingcloudConfig       `json:"qingcloud_config"      yaml:"qingcloud_config"      env:"QINGCLOUD_CONFIG"           validate:"required"`
-	Source          string                 `json:"source"      yaml:"source"      env:"SOURCE" validate:"required"`
+	LogLevel      int8                   `json:"log_level"      yaml:"log_level"      env:"LOG_LEVEL,default=1" validate:"gte=1,lte=5"`
+	GRPCLog       *grpcwrap.LogConfig    `json:"grpc_log"       yaml:"grpc_log"       env:"GRPC_LOG"            validate:"required"`
+	GRPCServer    *grpcwrap.ServerConfig `json:"grpc_server"    yaml:"grpc_server"    env:"GRPC_SERVER"         validate:"required"`
+	MetricsServer *metrics.Config        `json:"metrics_server" yaml:"metrics_server" env:"METRICS_SERVER"      validate:"required"`
+	MySQL         *gormwrap.MySQLConfig  `json:"mysql"          yaml:"mysql"          env:"MYSQL"               validate:"required"`
+	Redis         *rediswrap.RedisConfig `json:"redis"          yaml:"redis"          env:"REDIS"               validate:"required"`
+	Qingcloud     *QingcloudConfig       `json:"qingcloud"      yaml:"qingcloud"      env:"QINGCLOUD"           validate:"required"`
+	Source        string                 `json:"source"      yaml:"source"      env:"SOURCE" validate:"required"`
+	Tracer        *gtrace.Config         `json:"tracer"         yaml:"tracer"         env:"TRACER"              validate:"required"`
 }
 
 func loadFromFile(cfg *Config) (err error) {

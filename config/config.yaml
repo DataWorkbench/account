@@ -7,7 +7,7 @@ grpc_server:
   address: "127.0.0.1:9110"  # required
 
 grpc_log:
-  log_level: 1 #  1 => info, 2 => waring, 3 => error, 4 => fatal
+  log_level: 3 #  1 => info, 2 => waring, 3 => error, 4 => fatal
   log_verbosity: 9
 
 metrics_server:
@@ -15,10 +15,14 @@ metrics_server:
   address: "127.0.0.1:9210" # required when enabled is true
   url_path: "/metrics"
 
+tracer:
+  service_name: "account"
+  local_agent: "127.0.0.1:6831"
+
 mysql:
   hosts: "127.0.0.1:3306"  # required
   users: "root"  # required
-  password: "password"  # required
+  password: "root"  # required
   database: "data_workbench"  # required
   max_idle_conn: 16
   max_open_conn: 128
@@ -27,15 +31,16 @@ mysql:
   slow_threshold: 2s
 
 redis:
-  sentinel_addrs: "127.0.0.1:26379,127.0.0.1:26380,127.0.0.1:26381"
-  addrs: "127.0.0.1:7000,127.0.0.1:7001,127.0.0.1:7002,127.0.0.1:7003,127.0.0.1:7004,127.0.0.1:7005"
-  addr: "127.0.0.1:6379"
-  database: 0
+  mode: "standalone" # Optional Value: "standalone/sentinel/cluster"
   master_name: "mymaster"
-  mode: "standalone"
+  standalone_addr: "127.0.0.1:6379"
+  sentinel_addr: "127.0.0.1:26379,127.0.0.1:26380,127.0.0.1:26381"
+  cluster_addr: "127.0.0.1:7000,127.0.0.1:7001,127.0.0.1:7002,127.0.0.1:7003,127.0.0.1:7004,127.0.0.1:7005"
+  database: 0
+  user_name: ""
   password: "password"
 
-qingcloud_config:
+qingcloud:
   access_key_id: "NHYIAFWQGTUOYJAPQZTK"
   secret_access_key: "xl7G25CjeEZ5gQIjC6GbHZsXDmqUfl9iOVAUcQIx"
   host: "api.qingcloud.com"

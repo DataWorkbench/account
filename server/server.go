@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,6 +14,7 @@ import (
 	"github.com/DataWorkbench/account/handler"
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/grpcwrap"
+	"github.com/DataWorkbench/common/gtrace"
 	"github.com/DataWorkbench/common/metrics"
 	"github.com/DataWorkbench/common/rediswrap"
 	"github.com/DataWorkbench/common/utils/buildinfo"
@@ -42,14 +44,27 @@ func Start() (err error) {
 		rpcServer    *grpcwrap.Server
 		metricServer *metrics.Server
 		rdb          rediswrap.Client
+		tracer       gtrace.Tracer
+		tracerCloser io.Closer
 	)
 
 	defer func() {
 		rpcServer.GracefulStop()
 		_ = metricServer.Shutdown(ctx)
-		_ = lp.Close()
+
 		_ = rdb.Close()
+		if tracerCloser != nil {
+			_ = tracerCloser.Close()
+		}
+		_ = lp.Close()
 	}()
+
+	// create a tracer.
+	tracer, tracerCloser, err = gtrace.New(cfg.Tracer)
+	if err != nil {
+		return
+	}
+	ctx = gtrace.ContextWithTracer(ctx, tracer)
 
 	grpcwrap.SetLogger(lp, cfg.GRPCLog)
 
