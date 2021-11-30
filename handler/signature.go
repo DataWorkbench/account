@@ -20,7 +20,7 @@ func getAccessKey(ctx context.Context, req *accountpb.ValidateRequestSignatureRe
 		return nil, err
 	}
 	if secretAccessKey == nil {
-		secretAccessKey, err = source.SelectSource(req.ReqSource, cfg, ctx).GetSecretAccessKey(req.ReqAccessKeyId)
+		secretAccessKey, err = source.SelectSource(cfg.Source, cfg, ctx).GetSecretAccessKey(req.ReqAccessKeyId)
 		if err != nil {
 			if err == qerror.ResourceNotExists {
 				logger.Debug().String("Access key not exist from source", req.ReqAccessKeyId).Fire()
