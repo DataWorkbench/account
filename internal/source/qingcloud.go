@@ -1,21 +1,21 @@
 package source
 
 import (
-	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/account/internal/qingcloud"
 	"github.com/DataWorkbench/common/constants"
+	"github.com/DataWorkbench/common/lib/iaas"
 	"github.com/DataWorkbench/common/qerror"
 	qConfig "github.com/yunify/qingcloud-sdk-go/config"
 	qService "github.com/yunify/qingcloud-sdk-go/service"
 )
 
 type Qingcloud struct {
-	qingcloudConfig *config.QingcloudConfig
+	qingcloudConfig *iaas.Config
 }
 
 func (q *Qingcloud) GetSecretAccessKey(accessKeyID string) (*executor.AccessKey, error) {
-	qCfg, err := qConfig.New(q.qingcloudConfig.AccessKeyID, q.qingcloudConfig.SecretAccessKey)
+	qCfg, err := qConfig.New(q.qingcloudConfig.AccessKeyId, q.qingcloudConfig.SecretAccessKey)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (q *Qingcloud) GetSecretAccessKey(accessKeyID string) (*executor.AccessKey,
 }
 
 func (q *Qingcloud) DescribeUsers(userIDs []string, limit int, offset int) ([]User, int64, error) {
-	qCfg, err := qConfig.New(q.qingcloudConfig.AccessKeyID, q.qingcloudConfig.SecretAccessKey)
+	qCfg, err := qConfig.New(q.qingcloudConfig.AccessKeyId, q.qingcloudConfig.SecretAccessKey)
 	if err != nil {
 		return nil, 0, err
 	}

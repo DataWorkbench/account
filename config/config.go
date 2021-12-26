@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/DataWorkbench/common/lib/iaas"
 	"io/ioutil"
 	"os"
 	"time"
@@ -22,15 +23,6 @@ const (
 	envPrefix = "ACCOUNT"
 )
 
-type QingcloudConfig struct {
-	AccessKeyID     string `json:"access_key_id"     yaml:"access_key_id"     env:"ACCESS_KEY_ID"     validate:"required"`
-	SecretAccessKey string `json:"secret_access_key" yaml:"secret_access_key" env:"SECRET_ACCESS_KEY" validate:"required"`
-	Host            string `json:"host" yaml:"host" env:"HOST" validate:"required"`
-	Port            int    `json:"port" yaml:"port" env:"PORT" validate:"required"`
-	Protocol        string `json:"protocol" yaml:"protocol" env:"PROTOCOL" validate:"required"`
-	Uri             string `json:"uri" yaml:"uri" env:"URI" validate:"required"`
-}
-
 type Config struct {
 	LogLevel      int8                   `json:"log_level"      yaml:"log_level"      env:"LOG_LEVEL,default=1" validate:"gte=1,lte=5"`
 	GRPCLog       *grpcwrap.LogConfig    `json:"grpc_log"       yaml:"grpc_log"       env:"GRPC_LOG"            validate:"required"`
@@ -38,8 +30,8 @@ type Config struct {
 	MetricsServer *metrics.Config        `json:"metrics_server" yaml:"metrics_server" env:"METRICS_SERVER"      validate:"required"`
 	MySQL         *gormwrap.MySQLConfig  `json:"mysql"          yaml:"mysql"          env:"MYSQL"               validate:"required"`
 	Redis         *rediswrap.RedisConfig `json:"redis"          yaml:"redis"          env:"REDIS"               validate:"required"`
-	Qingcloud     *QingcloudConfig       `json:"qingcloud"      yaml:"qingcloud"      env:"QINGCLOUD"           validate:"required"`
-	Source        string                 `json:"source"      yaml:"source"      env:"SOURCE" validate:"required"`
+	Qingcloud     *iaas.Config           `json:"iaas"           yaml:"iaas"           env:"IAAS"                validate:"required"`
+	Source        string                 `json:"source"         yaml:"source"         env:"SOURCE"              validate:"required"`
 	Tracer        *gtrace.Config         `json:"tracer"         yaml:"tracer"         env:"TRACER"              validate:"required"`
 }
 

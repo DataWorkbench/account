@@ -3,7 +3,7 @@ module github.com/DataWorkbench/account
 go 1.15
 
 require (
-	github.com/DataWorkbench/common v0.0.0-20211126113638-775f770f22f9
+	github.com/DataWorkbench/common v0.0.0-20211226174318-25a1842e0495
 	github.com/DataWorkbench/glog v0.0.0-20210809050640-4960fd6de6ab
 	github.com/DataWorkbench/gproto v0.0.0-20211117073250-83da727b4f5e
 	github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd
