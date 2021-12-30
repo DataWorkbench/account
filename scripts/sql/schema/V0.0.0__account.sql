@@ -1,5 +1,4 @@
-CREATE DATABASE IF NOT EXISTS data_workbench;
-USE data_workbench;
+
 CREATE TABLE `user` (
     `user_id` VARCHAR(50) NOT NULL,
     `user_name` TEXT ,
