@@ -40,12 +40,20 @@ redis:
   user_name: ""
   password: ""
 
-qingcloud:
-  access_key_id: "NHYIAFWQGTUOYJAPQZTK"
-  secret_access_key: "xl7G25CjeEZ5gQIjC6GbHZsXDmqUfl9iOVAUcQIx"
-  host: "api.qingcloud.com"
-  port: 443
-  protocol: "https"
+iaas:
+  access_key_id: "LTMJGBXPHSEZRNVKKPHU"
+  secret_access_key: "7GvVuGAx2iB8NA9n8NtczH8BJnTkDGwGm9N6DYBo"
+  host: "api.testing.com"
+  port: 7777
+  protocol: "http"
   uri: "/iaas"
+  zone: "testing"
+#  access_key_id: "NHYIAFWQGTUOYJAPQZTK"
+#  secret_access_key: "xl7G25CjeEZ5gQIjC6GbHZsXDmqUfl9iOVAUcQIx"
+#  host: "api.qingcloud.com"
+#  port: 443
+#  protocol: "https"
+#  uri: "/iaas"
+#  zone: "gd2"
 
 source: "qingcloud"

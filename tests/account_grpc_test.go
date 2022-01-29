@@ -8,13 +8,13 @@ import (
 	"testing"
 
 	"github.com/DataWorkbench/glog"
+	"github.com/DataWorkbench/gproto/pkg/service/pbsvcaccount"
+	"github.com/DataWorkbench/gproto/pkg/types/pbrequest"
 	"github.com/stretchr/testify/require"
 
 	"github.com/DataWorkbench/common/grpcwrap"
 	"github.com/DataWorkbench/common/gtrace"
 	"github.com/DataWorkbench/common/utils/idgenerator"
-
-	"github.com/DataWorkbench/gproto/pkg/accountpb"
 )
 
 func sortReqQueryString(query string) string {
@@ -33,7 +33,7 @@ func TestSignatureLocalWithNotExistKey(t *testing.T) {
 
 	require.Nil(t, err, "%+v", err)
 
-	client := accountpb.NewAccountClient(conn)
+	client := pbsvcaccount.NewAccountClient(conn)
 	logger := glog.NewDefault()
 
 	worker := idgenerator.New("")
@@ -43,7 +43,7 @@ func TestSignatureLocalWithNotExistKey(t *testing.T) {
 	ln.WithFields().AddString("rid", reqId)
 	ctx = glog.WithContext(ctx, ln)
 	ctx = gtrace.ContextWithId(ctx, reqId)
-	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
 		ReqMethod:      "GET",
 		ReqPath:        "/iaas",
 		ReqQueryString: "access_key_id=NOTEXISTKEY&access_keys.1=NOTEXISTKEY&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
@@ -68,7 +68,7 @@ func TestSignatureQingcloudWithNotExistKey(t *testing.T) {
 
 	require.Nil(t, err, "%+v", err)
 
-	client := accountpb.NewAccountClient(conn)
+	client := pbsvcaccount.NewAccountClient(conn)
 	logger := glog.NewDefault()
 
 	worker := idgenerator.New("")
@@ -79,7 +79,7 @@ func TestSignatureQingcloudWithNotExistKey(t *testing.T) {
 
 	ctx = glog.WithContext(ctx, ln)
 	ctx = gtrace.ContextWithId(ctx, reqId)
-	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
 		ReqMethod:      "GET",
 		ReqPath:        "/staging/v1/workspace/",
 		ReqQueryString: "access_key_id=NOTEXISTKEY&limit=10&offset=0&owner=usr-CVIshpN1&service=bigdata&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-18T08%3A55%3A46Z&timestamp=2021-08-18T08%3A55%3A46Z&version=1",
@@ -105,7 +105,7 @@ func TestSignatureWithDefaultSource(t *testing.T) {
 
 	require.Nil(t, err, "%+v", err)
 
-	client := accountpb.NewAccountClient(conn)
+	client := pbsvcaccount.NewAccountClient(conn)
 	logger := glog.NewDefault()
 
 	worker := idgenerator.New("")
@@ -116,7 +116,7 @@ func TestSignatureWithDefaultSource(t *testing.T) {
 	ctx = glog.WithContext(ctx, ln)
 	ctx = gtrace.ContextWithId(ctx, reqId)
 
-	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
 		ReqMethod:      "GET",
 		ReqPath:        "/staging/v1/workspace/",
 		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&reverse=True&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&sort_by=created&version=1&limit=10&offset=0&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
@@ -126,7 +126,7 @@ func TestSignatureWithDefaultSource(t *testing.T) {
 	})
 	require.Nil(t, err, "%+v", err)
 
-	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
 		ReqMethod:      "GET",
 		ReqPath:        "/api/region/",
 		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
@@ -147,7 +147,7 @@ func TestSignatureLocal(t *testing.T) {
 
 	require.Nil(t, err, "%+v", err)
 
-	client := accountpb.NewAccountClient(conn)
+	client := pbsvcaccount.NewAccountClient(conn)
 	logger := glog.NewDefault()
 
 	worker := idgenerator.New("")
@@ -157,7 +157,7 @@ func TestSignatureLocal(t *testing.T) {
 	ln.WithFields().AddString("rid", reqId)
 	ctx = glog.WithContext(ctx, ln)
 	ctx = gtrace.ContextWithId(ctx, reqId)
-	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
 		ReqMethod:      "GET",
 		ReqPath:        "/iaas",
 		ReqQueryString: "access_key_id=IKSMDBWVIECPIVNDYZAB&access_keys.1=IKSMDBWVIECPIVNDYZAB&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
@@ -182,7 +182,7 @@ func TestSignatureQingcloud(t *testing.T) {
 
 	require.Nil(t, err, "%+v", err)
 
-	client := accountpb.NewAccountClient(conn)
+	client := pbsvcaccount.NewAccountClient(conn)
 	logger := glog.NewDefault()
 
 	worker := idgenerator.New("")
@@ -191,7 +191,7 @@ func TestSignatureQingcloud(t *testing.T) {
 	ln := logger.Clone()
 	ln.WithFields().AddString("rid", reqId)
 
-	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
 		ReqMethod:      "GET",
 		ReqPath:        "/staging/v1/workspace/",
 		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&reverse=True&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&sort_by=created&version=1&limit=10&offset=0&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
@@ -202,7 +202,7 @@ func TestSignatureQingcloud(t *testing.T) {
 	})
 	require.Nil(t, err, "%+v", err)
 
-	_, err = client.ValidateRequestSignature(ctx, &accountpb.ValidateRequestSignatureRequest{
+	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
 		ReqMethod:      "GET",
 		ReqPath:        "/api/region/",
 		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
@@ -225,7 +225,7 @@ func TestUsersWithDefaultSource(t *testing.T) {
 
 	require.Nil(t, err, "%+v", err)
 
-	client := accountpb.NewAccountClient(conn)
+	client := pbsvcaccount.NewAccountClient(conn)
 	logger := glog.NewDefault()
 
 	worker := idgenerator.New("")
@@ -235,7 +235,7 @@ func TestUsersWithDefaultSource(t *testing.T) {
 	ln.WithFields().AddString("rid", reqId)
 	ctx = glog.WithContext(ctx, ln)
 	ctx = gtrace.ContextWithId(ctx, reqId)
-	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
+	result, err := client.DescribeUsers(ctx, &pbrequest.DescribeUsers{
 		Users:  []string{"usr-CVIshpN1", "usr-notexist1", "usr-notexist2"},
 		Offset: 0,
 		Limit:  20,
@@ -258,7 +258,7 @@ func TestUsersLocal(t *testing.T) {
 
 	require.Nil(t, err, "%+v", err)
 
-	client := accountpb.NewAccountClient(conn)
+	client := pbsvcaccount.NewAccountClient(conn)
 	logger := glog.NewDefault()
 
 	worker := idgenerator.New("")
@@ -268,7 +268,7 @@ func TestUsersLocal(t *testing.T) {
 	ln.WithFields().AddString("rid", reqId)
 	ctx = glog.WithContext(ctx, ln)
 	ctx = gtrace.ContextWithId(ctx, reqId)
-	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
+	result, err := client.DescribeUsers(ctx, &pbrequest.DescribeUsers{
 		Users:     []string{"usr-iDMTmjGs", "usr-notexist1", "usr-notexist2"},
 		Offset:    0,
 		Limit:     20,
@@ -292,7 +292,7 @@ func TestUsersQingcloud(t *testing.T) {
 
 	require.Nil(t, err, "%+v", err)
 
-	client := accountpb.NewAccountClient(conn)
+	client := pbsvcaccount.NewAccountClient(conn)
 	logger := glog.NewDefault()
 
 	worker := idgenerator.New("")
@@ -302,7 +302,7 @@ func TestUsersQingcloud(t *testing.T) {
 	ln.WithFields().AddString("rid", reqId)
 	ctx = glog.WithContext(ctx, ln)
 	ctx = gtrace.ContextWithId(ctx, reqId)
-	result, err := client.DescribeUsers(ctx, &accountpb.DescribeUsersRequest{
+	result, err := client.DescribeUsers(ctx, &pbrequest.DescribeUsers{
 		Users:     []string{"usr-CVIshpN1", "usr-notexist1", "usr-notexist2"},
 		Offset:    0,
 		Limit:     3,

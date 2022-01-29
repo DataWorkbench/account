@@ -19,8 +19,7 @@ import (
 	"github.com/DataWorkbench/common/rediswrap"
 	"github.com/DataWorkbench/common/utils/buildinfo"
 	"github.com/DataWorkbench/glog"
-	"github.com/DataWorkbench/gproto/pkg/accountpb"
-	"google.golang.org/grpc"
+	"github.com/DataWorkbench/gproto/pkg/service/pbsvcaccount"
 	"gorm.io/gorm"
 )
 
@@ -88,9 +87,8 @@ func Start() (err error) {
 
 	executor.Init(db, lp, cfg)
 	handler.Init(handler.WithCfg(cfg), handler.WithRedis(rdb, ctx), handler.WithLogger(lp))
-	rpcServer.Register(func(s *grpc.Server) {
-		accountpb.RegisterAccountServer(s, &AccountServer{})
-	})
+
+	rpcServer.RegisterService(&pbsvcaccount.Account_ServiceDesc, &AccountServer{})
 
 	// handle signal
 	sigGroup := []os.Signal{syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM}

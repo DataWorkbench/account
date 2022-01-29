@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/DataWorkbench/common/constants"
-	"github.com/DataWorkbench/gproto/pkg/accountpb"
+	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
 )
 
 type User struct {
@@ -27,8 +27,8 @@ func (u User) TableName() string {
 	return constants.UserTableName
 }
 
-func (u *User) ToUserReply() *accountpb.User {
-	return &accountpb.User{
+func (u *User) ToUserReply() *pbmodel.User {
+	return &pbmodel.User{
 		UserId:        u.UserID,
 		UserName:      u.UserName,
 		Lang:          u.Lang,

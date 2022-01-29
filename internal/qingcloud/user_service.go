@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/DataWorkbench/gproto/pkg/accountpb"
+	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
 	"github.com/yunify/qingcloud-sdk-go/config"
 	"github.com/yunify/qingcloud-sdk-go/request"
 	"github.com/yunify/qingcloud-sdk-go/request/data"
@@ -28,8 +28,8 @@ type User struct {
 	Regions       []string `json:"regions" name:"regions"`
 }
 
-func (u *User) ToUserReply() *accountpb.User {
-	return &accountpb.User{
+func (u *User) ToUserReply() *pbmodel.User {
+	return &pbmodel.User{
 		UserId:        u.UserID,
 		UserName:      u.UserName,
 		Lang:          u.Lang,

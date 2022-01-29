@@ -7,10 +7,10 @@ import (
 	"github.com/DataWorkbench/account/internal/source"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/utils/signer"
-	"github.com/DataWorkbench/gproto/pkg/accountpb"
+	"github.com/DataWorkbench/gproto/pkg/types/pbrequest"
 )
 
-func getAccessKey(ctx context.Context, req *accountpb.ValidateRequestSignatureRequest) (*executor.AccessKey, error) {
+func getAccessKey(ctx context.Context, req *pbrequest.ValidateRequestSignature) (*executor.AccessKey, error) {
 	secretAccessKey, err := cache.GetAccessKey(req.ReqAccessKeyId, req.ReqSource)
 	if err != nil {
 		if err == qerror.ResourceNotExists {
@@ -39,7 +39,7 @@ func getAccessKey(ctx context.Context, req *accountpb.ValidateRequestSignatureRe
 	return secretAccessKey, nil
 }
 
-func ValidateRequestSignature(ctx context.Context, req *accountpb.ValidateRequestSignatureRequest) (*executor.AccessKey, error) {
+func ValidateRequestSignature(ctx context.Context, req *pbrequest.ValidateRequestSignature) (*executor.AccessKey, error) {
 	if req.ReqSource == "" {
 		req.ReqSource = executor.AccountExecutor.GetConf().Source
 	}

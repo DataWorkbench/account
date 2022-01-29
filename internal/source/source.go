@@ -6,11 +6,11 @@ import (
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/common/constants"
-	"github.com/DataWorkbench/gproto/pkg/accountpb"
+	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
 )
 
 type User interface {
-	ToUserReply() *accountpb.User
+	ToUserReply() *pbmodel.User
 }
 
 type Source interface {

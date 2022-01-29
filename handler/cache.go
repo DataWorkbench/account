@@ -10,7 +10,7 @@ import (
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/rediswrap"
-	"github.com/DataWorkbench/gproto/pkg/accountpb"
+	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -60,7 +60,7 @@ func (cache *Cache) GetPrefixKey(source string, resource string) string {
 	return constants.Account + constants.RedisSeparator + source + constants.RedisSeparator + resource + constants.RedisSeparator
 }
 
-func (cache *Cache) CacheUsers(users []*accountpb.User, source string) error {
+func (cache *Cache) CacheUsers(users []*pbmodel.User, source string) error {
 	for _, u := range users {
 		if err := cache.CacheUser(u, u.UserId, source); err != nil {
 			return err
@@ -69,7 +69,7 @@ func (cache *Cache) CacheUsers(users []*accountpb.User, source string) error {
 	return nil
 }
 
-func (cache *Cache) CacheUser(u *accountpb.User, userID string, source string) error {
+func (cache *Cache) CacheUser(u *pbmodel.User, userID string, source string) error {
 	if u == nil {
 		return cache.CacheNotExistUser(userID, source)
 	}
@@ -86,9 +86,9 @@ func (cache *Cache) CacheNotExistUser(userID string, source string) error {
 	return nil
 }
 
-func (cache *Cache) GetUser(userID string, source string) (*accountpb.User, error) {
+func (cache *Cache) GetUser(userID string, source string) (*pbmodel.User, error) {
 	prefixKey := cache.GetPrefixKey(source, constants.UserTableName)
-	var user accountpb.User
+	var user pbmodel.User
 	err := cache.get(prefixKey+userID, &user)
 	if err != nil {
 		if err == redis.Nil {

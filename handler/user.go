@@ -7,12 +7,13 @@ import (
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/account/internal/source"
 	"github.com/DataWorkbench/common/qerror"
-	"github.com/DataWorkbench/gproto/pkg/accountpb"
+	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
+	"github.com/DataWorkbench/gproto/pkg/types/pbrequest"
 )
 
-func getUsers(userIds []string, source string) ([]*accountpb.User, []string, []string, error) {
+func getUsers(userIds []string, source string) ([]*pbmodel.User, []string, []string, error) {
 	uncachedUsers := []string{}
-	cachedUsers := []*accountpb.User{}
+	cachedUsers := []*pbmodel.User{}
 	notExistsUsers := []string{}
 	for i := 0; i < len(userIds); i++ {
 		user, err := cache.GetUser(userIds[i], source)
@@ -39,7 +40,7 @@ func getUsers(userIds []string, source string) ([]*accountpb.User, []string, []s
 	return cachedUsers, uncachedUsers, notExistsUsers, nil
 }
 
-func DescribeUsers(ctx context.Context, req *accountpb.DescribeUsersRequest) ([]*accountpb.User, int64, error) {
+func DescribeUsers(ctx context.Context, req *pbrequest.DescribeUsers) ([]*pbmodel.User, int64, error) {
 	if req.ReqSource == "" {
 		req.ReqSource = executor.AccountExecutor.GetConf().Source
 	}
@@ -49,7 +50,7 @@ func DescribeUsers(ctx context.Context, req *accountpb.DescribeUsersRequest) ([]
 	}
 	var users []source.User
 	var totalCount int64
-	var userSet []*accountpb.User
+	var userSet []*pbmodel.User
 	if len(uncachedUsers) != 0 {
 		users, totalCount, err = source.SelectSource(req.ReqSource, cfg, ctx).DescribeUsers(uncachedUsers, int(req.Limit)-len(cachedUsers), int(req.Offset))
 		if err != nil {
@@ -85,8 +86,8 @@ func DescribeUsers(ctx context.Context, req *accountpb.DescribeUsersRequest) ([]
 
 }
 
-func DescribeAccessKey(ctx context.Context, input *accountpb.DescribeAccessKeyRequest) (output *executor.AccessKey, err error) {
-	output, err = getAccessKey(ctx, &accountpb.ValidateRequestSignatureRequest{
+func DescribeAccessKey(ctx context.Context, input *pbrequest.DescribeAccessKey) (output *executor.AccessKey, err error) {
+	output, err = getAccessKey(ctx, &pbrequest.ValidateRequestSignature{
 		ReqAccessKeyId: input.AccessKeyId,
 		ReqSource:      cfg.Source,
 	})
