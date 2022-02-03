@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/DataWorkbench/glog"
-	"github.com/DataWorkbench/gproto/pkg/service/pbsvcaccount"
-	"github.com/DataWorkbench/gproto/pkg/types/pbrequest"
+	"github.com/DataWorkbench/gproto/xgo/service/pbsvcaccount"
+	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/stretchr/testify/require"
 
 	"github.com/DataWorkbench/common/grpcwrap"

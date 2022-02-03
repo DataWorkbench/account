@@ -3,9 +3,9 @@ module github.com/DataWorkbench/account
 go 1.15
 
 require (
-	github.com/DataWorkbench/common v0.0.0-20220129200420-0c09733eea52
+	github.com/DataWorkbench/common v0.0.0-20220203115821-93c5866a3fef
 	github.com/DataWorkbench/glog v0.0.0-20210809050640-4960fd6de6ab
-	github.com/DataWorkbench/gproto v0.0.0-20220129195357-34752dda1fc0
+	github.com/DataWorkbench/gproto v0.0.0-20220203115455-814de350e0e0
 	github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/go-redis/redis/v8 v8.11.0

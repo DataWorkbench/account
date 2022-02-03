@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
+	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/yunify/qingcloud-sdk-go/config"
 	"github.com/yunify/qingcloud-sdk-go/request"
 	"github.com/yunify/qingcloud-sdk-go/request/data"

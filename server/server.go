@@ -19,7 +19,7 @@ import (
 	"github.com/DataWorkbench/common/rediswrap"
 	"github.com/DataWorkbench/common/utils/buildinfo"
 	"github.com/DataWorkbench/glog"
-	"github.com/DataWorkbench/gproto/pkg/service/pbsvcaccount"
+	"github.com/DataWorkbench/gproto/xgo/service/pbsvcaccount"
 	"gorm.io/gorm"
 )
 

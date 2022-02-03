@@ -6,7 +6,7 @@ import (
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/common/constants"
-	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
+	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 )
 
 type User interface {

@@ -10,7 +10,7 @@ import (
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/rediswrap"
-	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
+	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/go-redis/redis/v8"
 )
 

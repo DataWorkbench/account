@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/DataWorkbench/common/constants"
-	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
+	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 )
 
 type User struct {

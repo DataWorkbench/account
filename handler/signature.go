@@ -7,7 +7,7 @@ import (
 	"github.com/DataWorkbench/account/internal/source"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/utils/signer"
-	"github.com/DataWorkbench/gproto/pkg/types/pbrequest"
+	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 )
 
 func getAccessKey(ctx context.Context, req *pbrequest.ValidateRequestSignature) (*executor.AccessKey, error) {

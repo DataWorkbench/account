@@ -7,8 +7,8 @@ import (
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/account/internal/source"
 	"github.com/DataWorkbench/common/qerror"
-	"github.com/DataWorkbench/gproto/pkg/types/pbmodel"
-	"github.com/DataWorkbench/gproto/pkg/types/pbrequest"
+	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
+	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 )
 
 func getUsers(userIds []string, source string) ([]*pbmodel.User, []string, []string, error) {
