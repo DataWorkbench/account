@@ -32,7 +32,7 @@ func getAccessKey(ctx context.Context, req *pbrequest.ValidateRequestSignature) 
 			}
 			return nil, err
 		}
-		logger.Debug().String("Get access key not exist from source", req.ReqAccessKeyId).Fire()
+		logger.Debug().String("Get access key from source successful", req.ReqAccessKeyId).Fire()
 		if err = cache.CacheAccessKey(secretAccessKey, req.ReqAccessKeyId, req.ReqSource); err != nil {
 			logger.Warn().String("cache access key error", err.Error())
 		}
