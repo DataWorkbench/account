@@ -17,9 +17,10 @@ func getAccessKey(ctx context.Context, req *pbrequest.ValidateRequestSignature) 
 			logger.Debug().String("Access key not exist from cache", req.ReqAccessKeyId).Fire()
 			return nil, qerror.AccessKeyNotExists.Format(req.ReqAccessKeyId)
 		}
-		return nil, err
+		logger.Error().String("Get access key from cache error", err.Error())
 	}
 	if secretAccessKey == nil {
+		logger.Debug().String("Get access key from source", req.ReqAccessKeyId)
 		secretAccessKey, err = source.SelectSource(cfg.Source, cfg, ctx).GetSecretAccessKey(req.ReqAccessKeyId)
 		if err != nil {
 			if err == qerror.ResourceNotExists {
@@ -32,9 +33,11 @@ func getAccessKey(ctx context.Context, req *pbrequest.ValidateRequestSignature) 
 			return nil, err
 		}
 		logger.Debug().String("Get access key not exist from source", req.ReqAccessKeyId).Fire()
-		cache.CacheAccessKey(secretAccessKey, req.ReqAccessKeyId, req.ReqSource)
+		if err = cache.CacheAccessKey(secretAccessKey, req.ReqAccessKeyId, req.ReqSource); err != nil {
+			logger.Warn().String("cache access key error", err.Error())
+		}
 	} else {
-		logger.Debug().String("Get access key not exist from cache", req.ReqAccessKeyId).Fire()
+		logger.Debug().String("Get access key from cache successful", req.ReqAccessKeyId).Fire()
 	}
 	return secretAccessKey, nil
 }

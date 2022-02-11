@@ -22,7 +22,7 @@ func getUsers(userIds []string, source string) ([]*pbmodel.User, []string, []str
 				notExistsUsers = append(notExistsUsers, userIds[i])
 				continue
 			}
-			return nil, []string{}, []string{}, err
+			logger.Error().String("Get user from cache error", err.Error())
 		}
 		if user != nil {
 			cachedUsers = append(cachedUsers, user)
