@@ -7,14 +7,14 @@ import (
 )
 
 type DBExecutor struct {
-	db     *gorm.DB
+	Db     *gorm.DB
 	logger *glog.Logger
 	conf   *config.Config
 }
 
 func newExecutor(db *gorm.DB, log *glog.Logger, conf *config.Config) *DBExecutor {
 	ex := &DBExecutor{
-		db:     db,
+		Db:     db,
 		logger: log,
 		conf:   conf,
 	}

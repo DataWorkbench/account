@@ -86,7 +86,7 @@ func Start() (err error) {
 	}
 
 	executor.Init(db, lp, cfg)
-	handler.Init(handler.WithCfg(cfg), handler.WithRedis(rdb, ctx), handler.WithLogger(lp))
+	handler.Init(handler.WithCfg(cfg), handler.WithRedis(rdb, ctx), handler.WithLogger(lp), handler.WithIdGenerator())
 
 	rpcServer.RegisterService(&pbsvcaccount.Account_ServiceDesc, &AccountServer{})
 

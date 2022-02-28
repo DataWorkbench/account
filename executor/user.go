@@ -1,8 +1,12 @@
 package executor
 
 import (
-	"context"
+	"errors"
+	"github.com/DataWorkbench/common/qerror"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"strings"
+	"time"
 
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
@@ -11,6 +15,7 @@ import (
 type User struct {
 	UserID        string `gorm:"column:user_id;"`
 	UserName      string `gorm:"column:user_name;"`
+	Password      string `gorm:"column:password"`
 	Lang          string `gorm:"column:lang;"`
 	Email         string `gorm:"column:email;"`
 	Phone         string `gorm:"column:phone;"`
@@ -21,6 +26,8 @@ type User struct {
 	Privilege     int32  `gorm:"column:privilege;"`
 	Zones         string `gorm:"column:zones;"`
 	Regions       string `gorm:"column:regions;"`
+	StatusTime    int64  `gorm:"column:status_time"`
+	CreateTime    int64  `gorm:"column:create_time"`
 }
 
 func (u User) TableName() string {
@@ -45,13 +52,12 @@ func (u *User) ToUserReply() *pbmodel.User {
 }
 
 func (dbe *DBExecutor) ListUsers(
-	ctx context.Context, user_ids []string, limit int, offset int) (u []*User, err error) {
+	db *gorm.DB, user_ids []string, limit int, offset int) (u []*User, err error) {
 
 	query := "user_id in ?"
 	var args []interface{}
 	args = append(args, user_ids)
 
-	db := dbe.db.WithContext(ctx)
 	err = db.Table(constants.UserTableName).
 		Select(constants.UserColumns).
 		Where(query, args...).Limit(limit).Offset(offset).Scan(&u).Error
@@ -62,13 +68,12 @@ func (dbe *DBExecutor) ListUsers(
 }
 
 func (dbe *DBExecutor) CountUsers(
-	ctx context.Context, user_ids []string) (count int64, err error) {
+	db *gorm.DB, user_ids []string) (count int64, err error) {
 
 	query := "user_id in ?"
 	var args []interface{}
 	args = append(args, user_ids)
 
-	db := dbe.db.WithContext(ctx)
 	err = db.Table(constants.UserTableName).
 		Select(constants.UserColumns).
 		Where(query, args...).Count(&count).Error
@@ -76,4 +81,104 @@ func (dbe *DBExecutor) CountUsers(
 		return
 	}
 	return
+}
+
+func checkUserInfoIsConflict(tx *gorm.DB, user *User) (err error) {
+	existUser := new(User)
+	err = tx.Table(constants.UserTableName).Select(constants.UserColumns).Clauses(clause.Where{
+		Exprs: []clause.Expression{
+			clause.Or(
+				clause.Eq{Column: "user_name", Value: user.UserName},
+				clause.Eq{Column: "email", Value: user.Email},
+				clause.Eq{Column: "phone", Value: user.Phone}),
+			clause.Neq{Column: "status", Value: constants.UserStatusDelete},
+			clause.Neq{Column: "user_id", Value: user.UserID},
+		},
+	}).Take(existUser).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = nil
+		}
+		return
+	}
+	if existUser.UserName == user.UserName {
+		err = qerror.ResourceAlreadyExists.Format(user.UserName)
+		return
+	}
+	if existUser.Phone == user.Phone {
+		err = qerror.ResourceAlreadyExists.Format(user.Phone)
+		return
+	}
+	if existUser.Email == user.Email {
+		err = qerror.ResourceAlreadyExists.Format(user.Email)
+		return
+	}
+
+	return
+}
+
+func (dbe *DBExecutor) CreateUser(
+	db *gorm.DB, user *User) (err error) {
+	err = checkUserInfoIsConflict(db, user)
+	if err != nil {
+		return
+	}
+	if err = db.Table(constants.UserTableName).Create(user).Error; err != nil {
+		return
+	}
+	return
+}
+
+func (dbe *DBExecutor) UpdateUser(
+	db *gorm.DB, user *User) (err error) {
+	err = checkUserInfoIsConflict(db, user)
+	if err != nil {
+		return
+	}
+	updateUserInfo := &User{
+		UserName:   user.UserName,
+		Password:   user.Password,
+		Lang:       user.Lang,
+		Currency:   user.Currency,
+		StatusTime: time.Now().Unix(),
+	}
+	err = db.Table(constants.UserTableName).Where("user_id = ? AND status = ?", user.UserID, constants.UserStatusActive).
+		Updates(updateUserInfo).Error
+	return err
+}
+
+func (dbe *DBExecutor) DeleteUser(tx *gorm.DB, userId string) (err error) {
+	err = tx.Table(constants.UserTableName).Clauses(clause.Where{
+		Exprs: []clause.Expression{
+			clause.Neq{Column: "status", Value: constants.UserStatusDelete},
+			clause.Eq{Column: "user_id", Value: userId},
+		},
+	}).Updates(map[string]interface{}{
+		"status":      constants.UserStatusDelete,
+		"status_time": time.Now().Unix(),
+	}).Error
+	err = tx.Table(constants.AccessKeyTableName).Clauses(clause.Where{
+		Exprs: []clause.Expression{
+			clause.Eq{Column: "owner", Value: userId},
+		},
+	}).Updates(map[string]interface{}{
+		"status":      constants.AccessKeyStatusDisable,
+		"status_time": time.Now().Unix(),
+	}).Error
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (dbe *DBExecutor) GetUserByName(tx *gorm.DB, userName string) (*User, error) {
+	var user User
+
+	err := tx.Table(constants.UserTableName).
+		Select(constants.UserColumns).
+		Where(map[string]interface{}{"user_name": userName, "status": constants.UserStatusActive}).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

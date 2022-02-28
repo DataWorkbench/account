@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/DataWorkbench/common/utils/idgenerator"
 
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/common/constants"
@@ -11,9 +12,10 @@ import (
 
 // global options in this package.
 var (
-	cfg    *config.Config
-	cache  *Cache
-	logger *glog.Logger
+	cfg             *config.Config
+	cache           *Cache
+	logger          *glog.Logger
+	IdGeneratorUser *idgenerator.IDGenerator
 )
 
 type Option func()
@@ -40,6 +42,12 @@ func WithRedis(r rediswrap.Client, ctx context.Context) Option {
 			},
 			ctx: ctx,
 		}
+	}
+}
+
+func WithIdGenerator() Option {
+	return func() {
+		IdGeneratorUser = idgenerator.New(constants.IdPrefixUser, idgenerator.WithInstanceId(constants.IdInstanceUser))
 	}
 }
 

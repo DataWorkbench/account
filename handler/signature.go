@@ -59,3 +59,11 @@ func ValidateRequestSignature(ctx context.Context, req *pbrequest.ValidateReques
 	}
 	return secretAccessKey, nil
 }
+
+func DescribeAccessKey(ctx context.Context, input *pbrequest.DescribeAccessKey) (output *executor.AccessKey, err error) {
+	output, err = getAccessKey(ctx, &pbrequest.ValidateRequestSignature{
+		ReqAccessKeyId: input.AccessKeyId,
+		ReqSource:      cfg.Source,
+	})
+	return
+}

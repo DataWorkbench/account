@@ -32,6 +32,11 @@ func (cache *Cache) set(key string, value interface{}, expiration time.Duration)
 	return nil
 }
 
+func (cache *Cache) delete(key string) error {
+	_, err := cache.rdb.Del(cache.ctx, key).Result()
+	return err
+}
+
 func (cache *Cache) get(key string, value interface{}) error {
 	jsonValue, err := cache.rdb.Get(cache.ctx, key).Bytes()
 	if err != nil {
@@ -99,6 +104,21 @@ func (cache *Cache) GetUser(userID string, source string) (*pbmodel.User, error)
 	return &user, nil
 }
 
+func (cache *Cache) DelUser(userID string) error {
+	key := cache.GetPrefixKey(constants.LocalSource, constants.UserTableName) + userID
+	if err := cache.delete(key); err != nil {
+		return err
+	}
+	userKey := cache.GetPrefixKey(constants.LocalSource, constants.SessionPrefix) + userID
+	var expiredSession string
+	if err := cache.get(userKey, &expiredSession); err != nil {
+		return err
+	}
+	cache.delete(userKey)
+	cache.DeleteSession(expiredSession)
+	return nil
+}
+
 func (cache *Cache) CacheAccessKey(k *executor.AccessKey, accessKeyID string, source string) error {
 	if k == nil {
 		return cache.CacheNotExistAccessKey(accessKeyID, source)
@@ -128,4 +148,40 @@ func (cache *Cache) GetAccessKey(accessKeyID string, source string) (*executor.A
 		return nil, err
 	}
 	return &accessKey, nil
+}
+
+func (cache *Cache) GetSession(sessionId string) (*executor.AccessKey, error) {
+	key := cache.GetPrefixKey(constants.LocalSource, constants.SessionPrefix) + sessionId
+	var accessKey executor.AccessKey
+	err := cache.get(key, &accessKey)
+	if err != nil {
+		if err == redis.Nil {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &accessKey, nil
+}
+
+func (cache *Cache) DeleteSession(sessionId string) {
+	key := cache.GetPrefixKey(constants.LocalSource, constants.SessionPrefix) + sessionId
+	cache.delete(key)
+}
+
+func (cache *Cache) CacheSession(k *executor.AccessKey, sessionId string, userId string) error {
+	userKey := cache.GetPrefixKey(constants.LocalSource, constants.SessionPrefix) + userId
+	sessionKey := cache.GetPrefixKey(constants.LocalSource, constants.SessionPrefix) + sessionId
+	var expiredSession string
+	if err := cache.get(userKey, &expiredSession); err != nil {
+		if err == redis.Nil {
+			logger.Debug().String("ignore key not exists error", err.Error()).Fire()
+		} else {
+			return err
+		}
+	}
+	cache.DeleteSession(expiredSession)
+	if err := cache.set(userKey, sessionId, time.Second*time.Duration(constants.SessionCacheSeconds)); err != nil {
+		return err
+	}
+	return cache.set(sessionKey, k, time.Second*time.Duration(constants.SessionCacheSeconds))
 }

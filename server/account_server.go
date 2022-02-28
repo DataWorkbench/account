@@ -52,3 +52,52 @@ func (s *AccountServer) DescribeAccessKey(ctx context.Context, req *pbrequest.De
 	}
 	return reply, nil
 }
+
+func (s *AccountServer) CreateUser(ctx context.Context, req *pbrequest.CreateUser) (*pbresponse.CreateUser, error) {
+	output, err := handler.CreateUser(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.CreateUser{
+		User: output,
+	}
+	return reply, nil
+}
+
+func (s *AccountServer) UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbresponse.UpdateUser, error) {
+	output, err := handler.UpdateUser(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.UpdateUser{
+		User: output,
+	}
+	return reply, nil
+}
+
+func (s *AccountServer) DeleteUser(ctx context.Context, req *pbrequest.DeleteUser) (*pbresponse.DeleteUser, error) {
+	err := handler.DeleteUser(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.DeleteUser{
+		UserId: req.UserId,
+	}
+	return reply, nil
+}
+
+func (s *AccountServer) CheckSession(ctx context.Context, req *pbrequest.CheckSession) (*pbresponse.CheckSession, error) {
+	session, err := handler.CheckSession(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return session, nil
+}
+
+func (s *AccountServer) CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbresponse.CreateSession, error) {
+	session, err := handler.CreateSession(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return session, nil
+}

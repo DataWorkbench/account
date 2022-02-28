@@ -13,7 +13,8 @@ type Local struct {
 
 func (l *Local) GetSecretAccessKey(accessKeyID string) (*executor.AccessKey, error) {
 	accessKeyIDs := []string{accessKeyID}
-	accessKeys, err := executor.AccountExecutor.ListAccessKeys(l.ctx, accessKeyIDs, "", 1, 0)
+	db := executor.AccountExecutor.Db.WithContext(l.ctx)
+	accessKeys, err := executor.AccountExecutor.ListAccessKeys(db, accessKeyIDs, "", 1, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -24,11 +25,12 @@ func (l *Local) GetSecretAccessKey(accessKeyID string) (*executor.AccessKey, err
 }
 
 func (l *Local) DescribeUsers(userIDs []string, limit int, offset int) ([]User, int64, error) {
-	users, err := executor.AccountExecutor.ListUsers(l.ctx, userIDs, limit, offset)
+	db := executor.AccountExecutor.Db.WithContext(l.ctx)
+	users, err := executor.AccountExecutor.ListUsers(db, userIDs, limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}
-	totalCount, err := executor.AccountExecutor.CountUsers(l.ctx, userIDs)
+	totalCount, err := executor.AccountExecutor.CountUsers(db, userIDs)
 	if err != nil {
 		return nil, 0, err
 	}

@@ -1,12 +1,12 @@
-
 CREATE TABLE `user` (
     `user_id` VARCHAR(50) NOT NULL,
     `user_name` TEXT ,
-    `lang` VARCHAR(16) DEFAULT '' NOT NULL,
+    `password` VARCHAR(255) DEFAULT '' NOT NULL,
+    `lang` VARCHAR(16) DEFAULT 'cn' NOT NULL,
     `email` VARCHAR(255) DEFAULT '' NOT NULL,
     `phone` VARCHAR(50) DEFAULT '' NOT NULL,
     `status` VARCHAR(50) NOT NULL,
-    `role` VARCHAR(50) NOT NULL,
+    `role` VARCHAR(50) DEFAULT 'user' NOT NULL,
     `currency` VARCHAR(10) DEFAULT 'cny' NOT NULL,
     `gravatar_email` VARCHAR(255) DEFAULT '' NOT NULL,
     `privilege` INTEGER DEFAULT 1 NOT NULL,
