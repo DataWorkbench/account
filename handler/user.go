@@ -154,6 +154,8 @@ func UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, 
 		userInfo = &executor.User{
 			UserID:   req.UserId,
 			UserName: req.UserName,
+			Email: req.Email,
+			Phone: req.Phone,
 			Lang:     req.Lang,
 			Currency: req.Currency,
 		}

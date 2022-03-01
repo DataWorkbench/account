@@ -16,14 +16,14 @@ type User struct {
 	UserID        string `gorm:"column:user_id;"`
 	UserName      string `gorm:"column:user_name;"`
 	Password      string `gorm:"column:password"`
-	Lang          string `gorm:"column:lang;"`
+	Lang          string `gorm:"column:lang;default:'cn'"`
 	Email         string `gorm:"column:email;"`
 	Phone         string `gorm:"column:phone;"`
 	Status        string `gorm:"column:status;"`
-	Role          string `gorm:"column:role;"`
-	Currency      string `gorm:"column:currency;"`
+	Role          string `gorm:"column:role;default:'user'"`
+	Currency      string `gorm:"column:currency;default:'CNY'"`
 	GravatarEmail string `gorm:"column:gravatar_email;"`
-	Privilege     int32  `gorm:"column:privilege;"`
+	Privilege     int32  `gorm:"column:privilege;default:1"`
 	Zones         string `gorm:"column:zones;"`
 	Regions       string `gorm:"column:regions;"`
 	StatusTime    int64  `gorm:"column:status_time"`
@@ -85,12 +85,22 @@ func (dbe *DBExecutor) CountUsers(
 
 func checkUserInfoIsConflict(tx *gorm.DB, user *User) (err error) {
 	existUser := new(User)
+	var conflictClause []clause.Expression
+	if user.UserName != ""{
+		conflictClause = append(conflictClause, clause.Eq{Column: "user_name", Value: user.UserName})
+	}
+	if user.Email != ""{
+		conflictClause = append(conflictClause, clause.Eq{Column: "email", Value: user.Email})
+	}
+	if user.Phone != ""{
+		conflictClause = append(conflictClause, clause.Eq{Column: "phone", Value: user.Phone})
+	}
+	if len(conflictClause) == 0{
+		return
+	}
 	err = tx.Table(constants.UserTableName).Select(constants.UserColumns).Clauses(clause.Where{
 		Exprs: []clause.Expression{
-			clause.Or(
-				clause.Eq{Column: "user_name", Value: user.UserName},
-				clause.Eq{Column: "email", Value: user.Email},
-				clause.Eq{Column: "phone", Value: user.Phone}),
+			clause.Or(conflictClause...),
 			clause.Neq{Column: "status", Value: constants.UserStatusDelete},
 			clause.Neq{Column: "user_id", Value: user.UserID},
 		},
@@ -137,7 +147,8 @@ func (dbe *DBExecutor) UpdateUser(
 	}
 	updateUserInfo := &User{
 		UserName:   user.UserName,
-		Password:   user.Password,
+		Phone: user.Phone,
+		Email: user.Email,
 		Lang:       user.Lang,
 		Currency:   user.Currency,
 		StatusTime: time.Now().Unix(),
@@ -177,6 +188,18 @@ func (dbe *DBExecutor) GetUserByName(tx *gorm.DB, userName string) (*User, error
 	err := tx.Table(constants.UserTableName).
 		Select(constants.UserColumns).
 		Where(map[string]interface{}{"user_name": userName, "status": constants.UserStatusActive}).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (dbe *DBExecutor) GetUserById(tx *gorm.DB, userId string) (*User, error) {
+	var user User
+
+	err := tx.Table(constants.UserTableName).
+		Select(constants.UserColumns).
+		Where(map[string]interface{}{"user_id": userId, "status": constants.UserStatusActive}).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
