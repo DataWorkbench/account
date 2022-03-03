@@ -86,16 +86,16 @@ func (dbe *DBExecutor) CountUsers(
 func checkUserInfoIsConflict(tx *gorm.DB, user *User) (err error) {
 	existUser := new(User)
 	var conflictClause []clause.Expression
-	if user.UserName != ""{
+	if user.UserName != "" {
 		conflictClause = append(conflictClause, clause.Eq{Column: "user_name", Value: user.UserName})
 	}
-	if user.Email != ""{
+	if user.Email != "" {
 		conflictClause = append(conflictClause, clause.Eq{Column: "email", Value: user.Email})
 	}
-	if user.Phone != ""{
+	if user.Phone != "" {
 		conflictClause = append(conflictClause, clause.Eq{Column: "phone", Value: user.Phone})
 	}
-	if len(conflictClause) == 0{
+	if len(conflictClause) == 0 {
 		return
 	}
 	err = tx.Table(constants.UserTableName).Select(constants.UserColumns).Clauses(clause.Where{
@@ -147,8 +147,8 @@ func (dbe *DBExecutor) UpdateUser(
 	}
 	updateUserInfo := &User{
 		UserName:   user.UserName,
-		Phone: user.Phone,
-		Email: user.Email,
+		Phone:      user.Phone,
+		Email:      user.Email,
 		Lang:       user.Lang,
 		Currency:   user.Currency,
 		StatusTime: time.Now().Unix(),

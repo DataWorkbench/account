@@ -104,18 +104,20 @@ func (cache *Cache) GetUser(userID string, source string) (*pbmodel.User, error)
 	return &user, nil
 }
 
-func (cache *Cache) DelUser(userID string) error {
+func (cache *Cache) DelUser(userID string, withSession bool) error {
 	key := cache.GetPrefixKey(constants.LocalSource, constants.UserTableName) + userID
 	if err := cache.delete(key); err != nil {
 		return err
 	}
-	userKey := cache.GetPrefixKey(constants.LocalSource, constants.SessionPrefix) + userID
-	var expiredSession string
-	if err := cache.get(userKey, &expiredSession); err != nil {
-		return err
+	if withSession {
+		userKey := cache.GetPrefixKey(constants.LocalSource, constants.SessionPrefix) + userID
+		var expiredSession string
+		if err := cache.get(userKey, &expiredSession); err != nil {
+			return err
+		}
+		cache.delete(userKey)
+		cache.DeleteSession(expiredSession)
 	}
-	cache.delete(userKey)
-	cache.DeleteSession(expiredSession)
 	return nil
 }
 

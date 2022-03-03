@@ -154,8 +154,8 @@ func UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, 
 		userInfo = &executor.User{
 			UserID:   req.UserId,
 			UserName: req.UserName,
-			Email: req.Email,
-			Phone: req.Phone,
+			Email:    req.Email,
+			Phone:    req.Phone,
 			Lang:     req.Lang,
 			Currency: req.Currency,
 		}
@@ -169,7 +169,7 @@ func UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, 
 	if err != nil {
 		return nil, err
 	}
-	if ignoreError := cache.DelUser(req.UserId); ignoreError != nil {
+	if ignoreError := cache.DelUser(req.UserId, false); ignoreError != nil {
 		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
 	}
 	return userInfo.ToUserReply(), nil
@@ -184,7 +184,7 @@ func DeleteUser(ctx context.Context, req *pbrequest.DeleteUser) error {
 		}
 		return xErr
 	})
-	if ignoreError := cache.DelUser(req.UserId); ignoreError != nil {
+	if ignoreError := cache.DelUser(req.UserId, true); ignoreError != nil {
 		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
 	}
 	return err

@@ -34,6 +34,9 @@ func (dbe *DBExecutor) ListAccessKeys(
 		args = append(args, owner)
 	}
 
+	query += " and status = ?"
+	args = append(args, constants.AccessKeyStatusEnable)
+
 	err = db.Table(constants.AccessKeyTableName).
 		Select(constants.AccessKeyColumns).
 		Where(query, args...).Limit(limit).Offset(offset).Scan(&k).Error
@@ -57,7 +60,7 @@ func (dbe *DBExecutor) GetAccessKeyByOwner(tx *gorm.DB, owner string) (*AccessKe
 
 	err := tx.Table(constants.AccessKeyTableName).
 		Select(constants.AccessKeyColumns).
-		Where(map[string]interface{}{"owner": owner}).First(&key).Error
+		Where(map[string]interface{}{"owner": owner, "status": constants.AccessKeyStatusEnable}).First(&key).Error
 	if err != nil {
 		return nil, err
 	}

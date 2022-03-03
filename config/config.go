@@ -12,6 +12,7 @@ import (
 	"github.com/DataWorkbench/common/gtrace"
 	"github.com/DataWorkbench/common/metrics"
 	"github.com/DataWorkbench/common/rediswrap"
+	"github.com/DataWorkbench/common/utils/logutil"
 	"github.com/DataWorkbench/loader"
 	"github.com/go-playground/validator/v10"
 	"gopkg.in/yaml.v3"
@@ -24,7 +25,7 @@ const (
 )
 
 type Config struct {
-	LogLevel      int8                   `json:"log_level"      yaml:"log_level"      env:"LOG_LEVEL,default=1" validate:"gte=1,lte=5"`
+	LogConfig     *logutil.Config        `json:"log" yaml:"log" env:"LOG,default=" validate:"required"`
 	GRPCLog       *grpcwrap.LogConfig    `json:"grpc_log"       yaml:"grpc_log"       env:"GRPC_LOG"            validate:"required"`
 	GRPCServer    *grpcwrap.ServerConfig `json:"grpc_server"    yaml:"grpc_server"    env:"GRPC_SERVER"         validate:"required"`
 	MetricsServer *metrics.Config        `json:"metrics_server" yaml:"metrics_server" env:"METRICS_SERVER"      validate:"required"`

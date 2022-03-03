@@ -3,10 +3,14 @@ package handler
 import (
 	"context"
 	"github.com/DataWorkbench/account/executor"
+	"github.com/DataWorkbench/common/constants"
+	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/utils/password"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
+	"gorm.io/gorm"
+	"time"
 )
 
 func CheckSession(ctx context.Context, req *pbrequest.CheckSession) (*pbresponse.CheckSession, error) {
@@ -27,20 +31,43 @@ func CheckSession(ctx context.Context, req *pbrequest.CheckSession) (*pbresponse
 }
 
 func CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbresponse.CreateSession, error) {
-	db := executor.AccountExecutor.Db.WithContext(ctx)
-	user, err := executor.AccountExecutor.GetUserByName(db, req.UserName)
-	if err != nil {
-		return nil, err
-	}
-	if user == nil {
-		return nil, qerror.UserNotExists.Format(req.UserName)
-	}
-	if !password.Check(req.Password, user.Password) {
-		logger.Warn().String(req.Password, user.Password).Fire()
-		return nil, qerror.UserNameOrPasswordError
-	}
-	accessKey, err := executor.AccountExecutor.GetAccessKeyByOwner(db, user.UserID)
-	if err != nil {
+	var user *executor.User
+	var accessKey *executor.AccessKey
+	err := gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
+		var xErr error
+		if user, xErr = executor.AccountExecutor.GetUserByName(tx, req.UserName); xErr != nil {
+			return xErr
+		}
+		if user == nil {
+			xErr = qerror.UserNotExists.Format(req.UserName)
+			return xErr
+		}
+		if !password.Check(req.Password, user.Password) {
+			logger.Warn().String(req.Password, user.Password).Fire()
+			xErr = qerror.UserNameOrPasswordError
+			return xErr
+		}
+		if accessKey, xErr = executor.AccountExecutor.GetAccessKeyByOwner(tx, user.UserID); xErr != nil {
+			if xErr == gorm.ErrRecordNotFound {
+				accessKeyId, secretKey := password.RandomGenerateAccessKey()
+				accessKey = &executor.AccessKey{
+					AccessKeyID:     accessKeyId,
+					SecretAccessKey: secretKey,
+					Owner:           user.UserID,
+					Status:          constants.AccessKeyStatusEnable,
+					CreateTime:      time.Now().Unix(),
+					StatusTime:      time.Now().Unix(),
+				}
+				if xErr = executor.AccountExecutor.CreateAccessKey(tx, accessKey); xErr != nil {
+					return xErr
+				}
+			} else {
+				return xErr
+			}
+		}
+		return xErr
+	})
+	if err != nil{
 		return nil, err
 	}
 	session := password.GenerateSession()

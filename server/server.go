@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/DataWorkbench/common/utils/logutil"
 	"io"
 	"os"
 	"os/signal"
@@ -29,16 +30,12 @@ func Start() (err error) {
 
 	var cfg *config.Config
 
-	cfg, err = config.Load()
-	if err != nil {
+	if cfg, err = config.Load(); err != nil {
 		return
 	}
 
-	// init parent logger
-	lp := glog.NewDefault().WithLevel(glog.Level(cfg.LogLevel))
-	ctx := glog.WithContext(context.Background(), lp)
-
 	var (
+		lp           *glog.Logger
 		db           *gorm.DB
 		rpcServer    *grpcwrap.Server
 		metricServer *metrics.Server
@@ -46,6 +43,13 @@ func Start() (err error) {
 		tracer       gtrace.Tracer
 		tracerCloser io.Closer
 	)
+
+	// init root logger
+	if lp, err = logutil.New(cfg.LogConfig); err != nil {
+		return
+	}
+	// Init context.Context.
+	ctx := glog.WithContext(context.Background(), lp)
 
 	defer func() {
 		rpcServer.GracefulStop()
