@@ -42,7 +42,7 @@ func CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbrespon
 			xErr = qerror.UserNotExists.Format(req.UserName)
 			return xErr
 		}
-		if !password.Check(req.Password, user.Password) {
+		if !req.IgnorePassword && !password.Check(req.Password, user.Password) {
 			logger.Warn().String(req.Password, user.Password).Fire()
 			xErr = qerror.UserNameOrPasswordError
 			return xErr
@@ -67,7 +67,7 @@ func CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbrespon
 		}
 		return xErr
 	})
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	session := password.GenerateSession()
