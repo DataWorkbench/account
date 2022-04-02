@@ -2,10 +2,11 @@ package config
 
 import (
 	"fmt"
-	"github.com/DataWorkbench/common/lib/iaas"
-	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/DataWorkbench/common/lib/iaas"
+	"github.com/a8m/envsubst"
 
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/grpcwrap"
@@ -44,7 +45,7 @@ func loadFromFile(cfg *Config) (err error) {
 	fmt.Printf("%s load config from file <%s>\n", time.Now().Format(time.RFC3339Nano), FilePath)
 
 	var b []byte
-	b, err = ioutil.ReadFile(FilePath)
+	b, err = envsubst.ReadFile(FilePath)
 	if err != nil && os.IsNotExist(err) {
 		return
 	}
