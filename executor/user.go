@@ -2,11 +2,12 @@ package executor
 
 import (
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/DataWorkbench/common/qerror"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"strings"
-	"time"
 
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
@@ -168,6 +169,9 @@ func (dbe *DBExecutor) DeleteUser(tx *gorm.DB, userId string) (err error) {
 		"status":      constants.UserStatusDelete,
 		"status_time": time.Now().Unix(),
 	}).Error
+	if err != nil {
+		return
+	}
 	err = tx.Table(constants.AccessKeyTableName).Clauses(clause.Where{
 		Exprs: []clause.Expression{
 			clause.Eq{Column: "owner", Value: userId},
