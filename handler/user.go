@@ -144,10 +144,6 @@ func CreateUser(ctx context.Context, req *pbrequest.CreateUser) (*pbmodel.User, 
 func UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, error) {
 	var userInfo *executor.User
 	var err error
-	req.Password, err = password.Encode(req.Password)
-	if err != nil {
-		return nil, err
-	}
 	err = gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
 		var xErr error
 
@@ -188,4 +184,103 @@ func DeleteUser(ctx context.Context, req *pbrequest.DeleteUser) error {
 		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
 	}
 	return err
+}
+
+func UpdateUserPassword(ctx context.Context, req *pbrequest.UpdateUserPassword) error {
+	var err error
+	var newEncodePassword string
+	newEncodePassword, err = password.Encode(req.NewPassword)
+	if err != nil {
+		return err
+	}
+	var user *executor.User
+	err = gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
+		var xErr error
+		// update password
+		if user, xErr = executor.AccountExecutor.GetUserByName(tx, req.UserName); xErr != nil {
+			return xErr
+		}
+		if user == nil {
+			xErr = qerror.UserNotExists.Format(req.UserName)
+			return xErr
+		}
+		if !password.Check(req.OldPassword, user.Password) {
+			logger.Warn().String(req.OldPassword, user.Password).Fire()
+			xErr = qerror.UserNameOrPasswordError
+			return xErr
+		}
+		if xErr = executor.AccountExecutor.UpdateUserPassword(tx, user, newEncodePassword); xErr != nil {
+			return xErr
+		}
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+	if ignoreError := cache.DelUser(user.UserID, true); ignoreError != nil {
+		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
+	}
+	return nil
+}
+
+
+func UpdateUserRole(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, error) {
+	var useRole *executor.User
+	var err error
+	if err != nil {
+		return nil, err
+	}
+	err = gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
+		var xErr error
+
+		useRole = &executor.User{
+			UserID:   req.UserId,
+			Role: req.Role,
+			Privilege: req.Privilege,
+		}
+
+		if xErr = executor.AccountExecutor.UpdateUserRole(tx, useRole); xErr != nil {
+			return xErr
+		}
+		return xErr
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	if ignoreError := cache.DelUser(req.UserId, false); ignoreError != nil {
+		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
+	}
+	return useRole.ToUserReply(), nil
+}
+
+func UpdateUserZones(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, error) {
+	var userZones *executor.User
+	var err error
+	if err != nil {
+		return nil, err
+	}
+	err = gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
+		var xErr error
+
+		userZones = &executor.User{
+			UserID:   req.UserId,
+			Zones: strings.Join(req.Zones, ","),
+			Regions: strings.Join(req.Regions, ","),
+		}
+
+		if xErr = executor.AccountExecutor.UpdateUserZones(tx, userZones); xErr != nil {
+			return xErr
+		}
+		return xErr
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	if ignoreError := cache.DelUser(req.UserId, false); ignoreError != nil {
+		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
+	}
+	return userZones.ToUserReply(), nil
 }

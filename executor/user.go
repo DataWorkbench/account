@@ -158,6 +158,43 @@ func (dbe *DBExecutor) UpdateUser(
 	return err
 }
 
+func (dbe *DBExecutor) UpdateUserRole(
+	db *gorm.DB, user *User) (err error) {
+	updateUserRole := &User{
+		Role: user.Role,
+		Privilege: user.Privilege,
+		StatusTime: time.Now().Unix(),
+	}
+	err = db.Table(constants.UserTableName).Where("user_id = ?", user.UserID).
+		Updates(updateUserRole).Error
+	return err
+}
+
+
+func (dbe *DBExecutor) UpdateUserZones(
+	db *gorm.DB, user *User) (err error) {
+	updateUserZones := &User{
+		Zones: user.Zones,
+		Regions: user.Regions,
+		StatusTime: time.Now().Unix(),
+	}
+	err = db.Table(constants.UserTableName).Where("user_id = ?", user.UserID).
+		Updates(updateUserZones).Error
+	return err
+}
+
+func (dbe *DBExecutor) UpdateUserPassword(
+	db *gorm.DB, user *User, newPassword string) (err error) {
+	updateUserPassword := &User{
+		Password: newPassword,
+		StatusTime: time.Now().Unix(),
+	}
+	err = db.Table(constants.UserTableName).Where(
+		"user_id = ?", user.UserID).
+		Updates(updateUserPassword).Error
+	return err
+}
+
 func (dbe *DBExecutor) DeleteUser(tx *gorm.DB, userId string) (err error) {
 	err = tx.Table(constants.UserTableName).Clauses(clause.Where{
 		Exprs: []clause.Expression{

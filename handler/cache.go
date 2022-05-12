@@ -25,6 +25,18 @@ func (cache *Cache) set(key string, value interface{}, expiration time.Duration)
 	if err != nil {
 		return err
 	}
+	_, err = cache.rdb.Set(cache.ctx, key, jsonString, expiration).Result()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cache *Cache) setN(key string, value interface{}, expiration time.Duration) error {
+	jsonString, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
 	_, err = cache.rdb.SetNX(cache.ctx, key, jsonString, expiration).Result()
 	if err != nil {
 		return err
@@ -186,4 +198,31 @@ func (cache *Cache) CacheSession(k *executor.AccessKey, sessionId string, userId
 		return err
 	}
 	return cache.set(sessionKey, k, time.Second*time.Duration(constants.SessionCacheSeconds))
+}
+
+
+func (cache *Cache) CacheProvider(provider *pbmodel.Provider) error {
+	prefixKey := cache.GetPrefixKey(constants.LocalSource, constants.ProviderPrefix)
+	return cache.set(prefixKey+provider.Name, provider, 0)
+}
+
+func (cache *Cache) GetProvider(providerName string) (*pbmodel.Provider, error) {
+	prefixKey := cache.GetPrefixKey(constants.LocalSource, constants.ProviderPrefix)
+	var provider pbmodel.Provider
+	err := cache.get(prefixKey+providerName, &provider)
+	if err != nil {
+		if err == redis.Nil {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &provider, nil
+}
+
+func (cache *Cache) DelProvider(providerName string) error {
+	key := cache.GetPrefixKey(constants.LocalSource, constants.ProviderPrefix) + providerName
+	if err := cache.delete(key); err != nil {
+		return err
+	}
+	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/DataWorkbench/common/constants"
+	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"sort"
 	"strings"
 	"testing"
@@ -570,4 +571,148 @@ func TestCreateSession(t *testing.T) {
 	checkSession, err = client.CheckSession(ctx, &pbrequest.CheckSession{Session: createSession.Session})
 	require.NotNil(t, err, "%+v", err)
 	require.Nil(t, checkSession)
+}
+
+func TestCreateProvider(t *testing.T) {
+	address := "127.0.0.1:9110"
+	lp := glog.NewDefault()
+	ctx := glog.WithContext(context.Background(), lp)
+	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+		Address: address,
+	})
+
+	require.Nil(t, err, "%+v", err)
+
+	client := pbsvcaccount.NewAccountClient(conn)
+	logger := glog.NewDefault()
+
+	worker := idgenerator.New("")
+	reqId, _ := worker.Take()
+
+	ln := logger.Clone()
+	ln.WithFields().AddString("rid", reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
+	provider := pbmodel.Provider{
+		Name:         "provider1",
+		ClientId:     "123456789",
+		ClientSecret: "123456789123456789123456789",
+		TokenUrl:     "https://127.0.0.1:8080/token",
+		RedirectUrl:  "https://127.0.0.1:8080/redirect",
+	}
+	resp, err := client.CreateProvider(ctx, &pbrequest.CreateProvider{
+		Name:         provider.Name,
+		ClientId:     provider.ClientId,
+		ClientSecret: provider.ClientSecret,
+		TokenUrl:     provider.TokenUrl,
+		RedirectUrl:  provider.RedirectUrl,
+	})
+	require.Nil(t, err, "%+v", err)
+	require.NotNil(t, resp.Provider)
+	require.Equal(t, resp.Provider.Name, provider.Name)
+	require.Equal(t, resp.Provider.ClientId, provider.ClientId)
+	require.Equal(t, resp.Provider.ClientSecret, provider.ClientSecret)
+	require.Equal(t, resp.Provider.TokenUrl, provider.TokenUrl)
+	require.Equal(t, resp.Provider.RedirectUrl, provider.RedirectUrl)
+	_, err = client.DeleteProvider(ctx, &pbrequest.DeleteProvider{Name: provider.Name})
+	require.Nil(t, err, "%+v", err)
+}
+
+
+func TestGetProvider(t *testing.T) {
+	address := "127.0.0.1:9110"
+	lp := glog.NewDefault()
+	ctx := glog.WithContext(context.Background(), lp)
+	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+		Address: address,
+	})
+
+	require.Nil(t, err, "%+v", err)
+
+	client := pbsvcaccount.NewAccountClient(conn)
+	logger := glog.NewDefault()
+
+	worker := idgenerator.New("")
+	reqId, _ := worker.Take()
+
+	ln := logger.Clone()
+	ln.WithFields().AddString("rid", reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
+	provider := pbmodel.Provider{
+		Name:         "provider1",
+		ClientId:     "123456789",
+		ClientSecret: "123456789123456789123456789",
+		TokenUrl:     "https://127.0.0.1:8080/token",
+		RedirectUrl:  "https://127.0.0.1:8080/redirect",
+	}
+	createProviderResp, err := client.CreateProvider(ctx, &pbrequest.CreateProvider{
+		Name:         provider.Name,
+		ClientId:     provider.ClientId,
+		ClientSecret: provider.ClientSecret,
+		TokenUrl:     provider.TokenUrl,
+		RedirectUrl:  provider.RedirectUrl,
+	})
+	require.Nil(t, err, "%+v", err)
+	require.NotNil(t, createProviderResp.Provider)
+	getProviderResp, err := client.GetProvider(ctx, &pbrequest.GetProvider{Name: provider.Name})
+	require.Equal(t, getProviderResp.Provider.Name, provider.Name)
+	require.Equal(t, getProviderResp.Provider.ClientId, provider.ClientId)
+	require.Equal(t, getProviderResp.Provider.ClientSecret, provider.ClientSecret)
+	require.Equal(t, getProviderResp.Provider.TokenUrl, provider.TokenUrl)
+	require.Equal(t, getProviderResp.Provider.RedirectUrl, provider.RedirectUrl)
+
+	_, err = client.GetProvider(ctx, &pbrequest.GetProvider{Name: "not_exist_provider"})
+	require.NotNil(t, err, "%+v", err)
+	_, err = client.DeleteProvider(ctx, &pbrequest.DeleteProvider{Name: provider.Name})
+	require.Nil(t, err, "%+v", err)
+}
+
+
+func TestDeleteProvider(t *testing.T) {
+	address := "127.0.0.1:9110"
+	lp := glog.NewDefault()
+	ctx := glog.WithContext(context.Background(), lp)
+	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+		Address: address,
+	})
+
+	require.Nil(t, err, "%+v", err)
+
+	client := pbsvcaccount.NewAccountClient(conn)
+	logger := glog.NewDefault()
+
+	worker := idgenerator.New("")
+	reqId, _ := worker.Take()
+
+	ln := logger.Clone()
+	ln.WithFields().AddString("rid", reqId)
+	ctx = glog.WithContext(ctx, ln)
+	ctx = gtrace.ContextWithId(ctx, reqId)
+	provider := pbmodel.Provider{
+		Name:         "provider1",
+		ClientId:     "123456789",
+		ClientSecret: "123456789123456789123456789",
+		TokenUrl:     "https://127.0.0.1:8080/token",
+		RedirectUrl:  "https://127.0.0.1:8080/redirect",
+	}
+	createProviderResp, err := client.CreateProvider(ctx, &pbrequest.CreateProvider{
+		Name:         provider.Name,
+		ClientId:     provider.ClientId,
+		ClientSecret: provider.ClientSecret,
+		TokenUrl:     provider.TokenUrl,
+		RedirectUrl:  provider.RedirectUrl,
+	})
+	require.Nil(t, err, "%+v", err)
+	require.NotNil(t, createProviderResp.Provider)
+	getProviderResp, err := client.GetProvider(ctx, &pbrequest.GetProvider{Name: provider.Name})
+	require.Equal(t, getProviderResp.Provider.Name, provider.Name)
+	require.Equal(t, getProviderResp.Provider.ClientId, provider.ClientId)
+	require.Equal(t, getProviderResp.Provider.ClientSecret, provider.ClientSecret)
+	require.Equal(t, getProviderResp.Provider.TokenUrl, provider.TokenUrl)
+	require.Equal(t, getProviderResp.Provider.RedirectUrl, provider.RedirectUrl)
+	_, err = client.DeleteProvider(ctx, &pbrequest.DeleteProvider{Name: provider.Name})
+	require.Nil(t, err, "%+v", err)
+	_, err = client.GetProvider(ctx, &pbrequest.GetProvider{Name: provider.Name})
+	require.NotNil(t, err, "%+v", err)
 }

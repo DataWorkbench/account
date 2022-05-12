@@ -7,6 +7,7 @@ import (
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/utils/password"
+	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
@@ -19,11 +20,21 @@ func CheckSession(ctx context.Context, req *pbrequest.CheckSession) (*pbresponse
 		return nil, err
 	}
 	if accessKey != nil {
+		var users []*pbmodel.User
+		users, _, err = DescribeUsers(ctx, &pbrequest.DescribeUsers{
+			Users: []string{accessKey.Owner},
+			ReqSource: constants.LocalSource,
+		})
+		if err != nil {
+			return nil, err
+		}
 
 		return &pbresponse.CheckSession{
 			UserId:          accessKey.Owner,
 			AccessKeyId:     accessKey.AccessKeyID,
 			SecretAccessKey: accessKey.SecretAccessKey,
+			Role: users[0].Role,
+			Privilege: users[0].Privilege,
 		}, nil
 	} else {
 		return nil, qerror.InvalidSession.Format(req.Session)
