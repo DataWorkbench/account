@@ -209,3 +209,17 @@ func (dbe *DBExecutor) GetUserById(tx *gorm.DB, userId string) (*User, error) {
 	}
 	return &user, nil
 }
+
+func (dbe *DBExecutor) CheckUserExists(tx *gorm.DB, userName string) (exists bool, err error) {
+	var user User
+	err = tx.Table(constants.UserTableName).
+		Select(constants.UserColumns).
+		Where(map[string]interface{}{"user_name": userName, "status": constants.UserStatusActive}).First(&user).Error
+	if err != nil {
+		return false, err
+	}
+	if user.UserID != "" && user.Status == constants.UserStatusActive {
+		exists = true
+	}
+	return
+}

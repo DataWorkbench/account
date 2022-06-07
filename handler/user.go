@@ -10,6 +10,7 @@ import (
 	"github.com/DataWorkbench/common/utils/password"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
+	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
 	"strings"
 	"time"
@@ -188,4 +189,22 @@ func DeleteUser(ctx context.Context, req *pbrequest.DeleteUser) error {
 		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
 	}
 	return err
+}
+
+func CheckUserExists(ctx context.Context, req *pbrequest.CheckUserExists) (*pbresponse.CheckUserExists, error) {
+	resp := &pbresponse.CheckUserExists{}
+	var exists = false
+	var xErr error
+	err := gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
+		if exists, xErr = executor.AccountExecutor.CheckUserExists(tx, req.UserName); xErr != nil {
+			return xErr
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	resp.Exists = exists
+
+	return resp, nil
 }
