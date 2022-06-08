@@ -90,12 +90,12 @@ func checkUserInfoIsConflict(tx *gorm.DB, user *User) (err error) {
 	if user.UserName != "" {
 		conflictClause = append(conflictClause, clause.Eq{Column: "user_name", Value: user.UserName})
 	}
-	if user.Email != "" {
-		conflictClause = append(conflictClause, clause.Eq{Column: "email", Value: user.Email})
-	}
-	if user.Phone != "" {
-		conflictClause = append(conflictClause, clause.Eq{Column: "phone", Value: user.Phone})
-	}
+	//if user.Email != "" {
+	//	conflictClause = append(conflictClause, clause.Eq{Column: "email", Value: user.Email})
+	//}
+	//if user.Phone != "" {
+	//	conflictClause = append(conflictClause, clause.Eq{Column: "phone", Value: user.Phone})
+	//}
 	if len(conflictClause) == 0 {
 		return
 	}
@@ -116,14 +116,14 @@ func checkUserInfoIsConflict(tx *gorm.DB, user *User) (err error) {
 		err = qerror.ResourceAlreadyExists.Format(user.UserName)
 		return
 	}
-	if existUser.Phone == user.Phone {
-		err = qerror.ResourceAlreadyExists.Format(user.Phone)
-		return
-	}
-	if existUser.Email == user.Email {
-		err = qerror.ResourceAlreadyExists.Format(user.Email)
-		return
-	}
+	//if existUser.Phone == user.Phone {
+	//	err = qerror.ResourceAlreadyExists.Format(user.Phone)
+	//	return
+	//}
+	//if existUser.Email == user.Email {
+	//	err = qerror.ResourceAlreadyExists.Format(user.Email)
+	//	return
+	//}
 
 	return
 }
