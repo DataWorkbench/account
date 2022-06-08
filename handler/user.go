@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/account/internal/source"
 	"github.com/DataWorkbench/common/constants"
@@ -193,18 +194,22 @@ func DeleteUser(ctx context.Context, req *pbrequest.DeleteUser) error {
 
 func CheckUserExists(ctx context.Context, req *pbrequest.CheckUserExists) (*pbresponse.CheckUserExists, error) {
 	resp := &pbresponse.CheckUserExists{}
-	var exists = false
 	var xErr error
+	var user *executor.User
 	err := gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
-		if exists, xErr = executor.AccountExecutor.CheckUserExists(tx, req.UserName); xErr != nil {
-			return xErr
+		if user, xErr = executor.AccountExecutor.GetUserByName(tx, req.UserName); xErr != nil {
+			if errors.Is(xErr, gorm.ErrRecordNotFound) {
+				xErr = nil
+				user = &executor.User{}
+			}
 		}
-		return nil
+		return xErr
 	})
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
-	resp.Exists = exists
-
+	if user.UserID != "" && user.Status == constants.UserStatusActive {
+		resp.Exists = true
+	}
 	return resp, nil
 }
