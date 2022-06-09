@@ -101,3 +101,11 @@ func (s *AccountServer) CreateSession(ctx context.Context, req *pbrequest.Create
 	}
 	return session, nil
 }
+
+func (s *AccountServer) CheckUserExists(ctx context.Context, req *pbrequest.CheckUserExists) (*pbresponse.CheckUserExists, error) {
+	resp, err := handler.CheckUserExists(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

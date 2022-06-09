@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/account/internal/source"
 	"github.com/DataWorkbench/common/constants"
@@ -10,6 +11,7 @@ import (
 	"github.com/DataWorkbench/common/utils/password"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
+	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
 	"strings"
 	"time"
@@ -152,8 +154,8 @@ func UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, 
 		var xErr error
 
 		userInfo = &executor.User{
-			UserID:   req.UserId,
-			UserName: req.UserName,
+			UserID: req.UserId,
+			//UserName: req.UserName,
 			Email:    req.Email,
 			Phone:    req.Phone,
 			Lang:     req.Lang,
@@ -188,4 +190,26 @@ func DeleteUser(ctx context.Context, req *pbrequest.DeleteUser) error {
 		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
 	}
 	return err
+}
+
+func CheckUserExists(ctx context.Context, req *pbrequest.CheckUserExists) (*pbresponse.CheckUserExists, error) {
+	resp := &pbresponse.CheckUserExists{}
+	var xErr error
+	var user *executor.User
+	err := gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
+		if user, xErr = executor.AccountExecutor.GetUserByName(tx, req.UserName); xErr != nil {
+			if errors.Is(xErr, gorm.ErrRecordNotFound) {
+				xErr = nil
+				user = &executor.User{}
+			}
+		}
+		return xErr
+	})
+	if err != nil {
+		return resp, err
+	}
+	if user.UserID != "" && user.Status == constants.UserStatusActive {
+		resp.Exists = true
+	}
+	return resp, nil
 }
