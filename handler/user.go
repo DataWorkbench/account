@@ -3,6 +3,9 @@ package handler
 import (
 	"context"
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/account/internal/source"
 	"github.com/DataWorkbench/common/constants"
@@ -13,14 +16,12 @@ import (
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
-	"strings"
-	"time"
 )
 
 func getUsers(userIds []string, source string) ([]*pbmodel.User, []string, []string, error) {
-	uncachedUsers := []string{}
-	cachedUsers := []*pbmodel.User{}
-	notExistsUsers := []string{}
+	var uncachedUsers []string
+	var cachedUsers []*pbmodel.User
+	var notExistsUsers []string
 	for i := 0; i < len(userIds); i++ {
 		user, err := cache.GetUser(userIds[i], source)
 		if err != nil {
@@ -36,7 +37,7 @@ func getUsers(userIds []string, source string) ([]*pbmodel.User, []string, []str
 			uncachedUsers = append(uncachedUsers, userIds[i])
 		}
 	}
-	cachedUserIds := []string{}
+	var cachedUserIds []string
 	for i := 0; i < len(cachedUsers); i++ {
 		cachedUserIds = append(cachedUserIds, cachedUsers[i].UserId)
 	}

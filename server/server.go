@@ -3,12 +3,14 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/DataWorkbench/common/utils/logutil"
 	"io"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/DataWorkbench/account/controller"
+	"github.com/DataWorkbench/common/utils/logutil"
 
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/account/executor"
@@ -92,7 +94,7 @@ func Start() (err error) {
 	executor.Init(db, lp, cfg)
 	handler.Init(handler.WithCfg(cfg), handler.WithRedis(rdb, ctx), handler.WithLogger(lp), handler.WithIdGenerator())
 
-	rpcServer.RegisterService(&pbsvcaccount.Account_ServiceDesc, &AccountServer{})
+	rpcServer.RegisterService(&pbsvcaccount.Account_ServiceDesc, &controller.AccountServer{})
 
 	// handle signal
 	sigGroup := []os.Signal{syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM}
@@ -114,7 +116,7 @@ func Start() (err error) {
 	}
 
 	go func() {
-		if err := metricServer.ListenAndServe(); err != nil {
+		if err = metricServer.ListenAndServe(); err != nil {
 			return
 		}
 	}()
