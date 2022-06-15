@@ -14,18 +14,18 @@ type AccountServer struct {
 	pbsvcaccount.UnimplementedAccountServer
 }
 
-func (s *AccountServer) ValidateRequestSignature(ctx context.Context,
-	req *pbrequest.ValidateRequestSignature) (*pbresponse.ValidateRequestSignature, error) {
-	secretKey, err := handler.ValidateRequestSignature(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	return &pbresponse.ValidateRequestSignature{
-		Status:  200,
-		Message: "",
-		UserId:  secretKey.Owner,
-	}, nil
-}
+//func (s *AccountServer) ValidateRequestSignature(ctx context.Context,
+//	req *pbrequest.ValidateRequestSignature) (*pbresponse.ValidateRequestSignature, error) {
+//	secretKey, err := handler.ValidateRequestSignature(ctx, req)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return &pbresponse.ValidateRequestSignature{
+//		Status:  200,
+//		Message: "",
+//		UserId:  secretKey.Owner,
+//	}, nil
+//}
 
 func (s *AccountServer) DescribeUsers(ctx context.Context, req *pbrequest.DescribeUsers) (*pbresponse.DescribeUsers, error) {
 	users, totalCount, err := handler.DescribeUsers(ctx, req)

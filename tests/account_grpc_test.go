@@ -2,11 +2,9 @@ package tests
 
 import (
 	"context"
-	"fmt"
-	"github.com/DataWorkbench/common/constants"
-	"sort"
-	"strings"
 	"testing"
+
+	"github.com/DataWorkbench/common/constants"
 
 	"github.com/DataWorkbench/glog"
 	"github.com/DataWorkbench/gproto/xgo/service/pbsvcaccount"
@@ -18,203 +16,203 @@ import (
 	"github.com/DataWorkbench/common/utils/idgenerator"
 )
 
-func sortReqQueryString(query string) string {
-	queryList := strings.Split(query, "&")
-	sort.Strings(queryList)
-	return strings.Join(queryList, "&")
-}
+//func sortReqQueryString(query string) string {
+//	queryList := strings.Split(query, "&")
+//	sort.Strings(queryList)
+//	return strings.Join(queryList, "&")
+//}
 
-func TestSignatureLocalWithNotExistKey(t *testing.T) {
-	address := "127.0.0.1:9110"
-	lp := glog.NewDefault()
-	ctx := glog.WithContext(context.Background(), lp)
-	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address: address,
-	})
+//func TestSignatureLocalWithNotExistKey(t *testing.T) {
+//	address := "127.0.0.1:9110"
+//	lp := glog.NewDefault()
+//	ctx := glog.WithContext(context.Background(), lp)
+//	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+//		Address: address,
+//	})
+//
+//	require.Nil(t, err, "%+v", err)
+//
+//	client := pbsvcaccount.NewAccountClient(conn)
+//	logger := glog.NewDefault()
+//
+//	worker := idgenerator.New("")
+//	reqId, _ := worker.Take()
+//
+//	ln := logger.Clone()
+//	ln.WithFields().AddString("rid", reqId)
+//	ctx = glog.WithContext(ctx, ln)
+//	ctx = gtrace.ContextWithId(ctx, reqId)
+//	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
+//		ReqMethod:      "GET",
+//		ReqPath:        "/iaas",
+//		ReqQueryString: "access_key_id=NOTEXISTKEY&access_keys.1=NOTEXISTKEY&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
+//		ReqBody:        "",
+//		ReqSignature:   "HhscGZcG6xgEME6sGwjbfb9KodcvF4WuJKRP1W3Z16Q%3D",
+//		ReqAccessKeyId: "NOTEXISTKEY",
+//		ReqSource:      constants.LocalSource,
+//	})
+//	if err != nil {
+//		fmt.Printf("error message: %s", err.Error())
+//	}
+//	require.NotNilf(t, err, "%+v", err)
+//}
+//
+//func TestSignatureQingcloudWithNotExistKey(t *testing.T) {
+//	address := "127.0.0.1:9110"
+//	lp := glog.NewDefault()
+//	ctx := glog.WithContext(context.Background(), lp)
+//	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+//		Address: address,
+//	})
+//
+//	require.Nil(t, err, "%+v", err)
+//
+//	client := pbsvcaccount.NewAccountClient(conn)
+//	logger := glog.NewDefault()
+//
+//	worker := idgenerator.New("")
+//	reqId, _ := worker.Take()
+//
+//	ln := logger.Clone()
+//	ln.WithFields().AddString("rid", reqId)
+//
+//	ctx = glog.WithContext(ctx, ln)
+//	ctx = gtrace.ContextWithId(ctx, reqId)
+//	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
+//		ReqMethod:      "GET",
+//		ReqPath:        "/staging/v1/workspace/",
+//		ReqQueryString: "access_key_id=NOTEXISTKEY&limit=10&offset=0&owner=usr-CVIshpN1&service=bigdata&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-18T08%3A55%3A46Z&timestamp=2021-08-18T08%3A55%3A46Z&version=1",
+//		ReqBody:        "null",
+//		ReqSignature:   "xwd%2BbqeqwQkMrBVaGbQ1yBdm0F6Y198vf1dHnUp0Uj4%3D",
+//		ReqAccessKeyId: "NOTEXISTKEY",
+//		ReqSource:      constants.QingcloudSource,
+//	})
+//	if err != nil {
+//		fmt.Printf("error message: %s", err.Error())
+//	}
+//	require.NotNilf(t, err, "%+v", err)
+//
+//}
+//
+//func TestSignatureWithDefaultSource(t *testing.T) {
+//	address := "127.0.0.1:9110"
+//	lp := glog.NewDefault()
+//	ctx := glog.WithContext(context.Background(), lp)
+//	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+//		Address: address,
+//	})
+//
+//	require.Nil(t, err, "%+v", err)
+//
+//	client := pbsvcaccount.NewAccountClient(conn)
+//	logger := glog.NewDefault()
+//
+//	worker := idgenerator.New("")
+//	reqId, _ := worker.Take()
+//
+//	ln := logger.Clone()
+//	ln.WithFields().AddString("rid", reqId)
+//	ctx = glog.WithContext(ctx, ln)
+//	ctx = gtrace.ContextWithId(ctx, reqId)
+//
+//	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
+//		ReqMethod:      "GET",
+//		ReqPath:        "/staging/v1/workspace/",
+//		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&reverse=True&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&sort_by=created&version=1&limit=10&offset=0&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
+//		ReqBody:        "null",
+//		ReqSignature:   "UIXVtLYN2MioTSzxdqranwqB%2BO4VHWZ7yFIiSr%2FGNqQ%3D",
+//		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
+//	})
+//	require.Nil(t, err, "%+v", err)
+//
+//	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
+//		ReqMethod:      "GET",
+//		ReqPath:        "/api/region/",
+//		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
+//		ReqBody:        "null",
+//		ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
+//		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
+//	})
+//	require.Nil(t, err, "%+v", err)
+//}
 
-	require.Nil(t, err, "%+v", err)
+//func TestSignatureLocal(t *testing.T) {
+//	address := "127.0.0.1:9110"
+//	lp := glog.NewDefault()
+//	ctx := glog.WithContext(context.Background(), lp)
+//	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+//		Address: address,
+//	})
+//
+//	require.Nil(t, err, "%+v", err)
+//
+//	client := pbsvcaccount.NewAccountClient(conn)
+//	logger := glog.NewDefault()
+//
+//	worker := idgenerator.New("")
+//	reqId, _ := worker.Take()
+//
+//	ln := logger.Clone()
+//	ln.WithFields().AddString("rid", reqId)
+//	ctx = glog.WithContext(ctx, ln)
+//	ctx = gtrace.ContextWithId(ctx, reqId)
+//	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
+//		ReqMethod:      "GET",
+//		ReqPath:        "/iaas",
+//		ReqQueryString: "access_key_id=IKSMDBWVIECPIVNDYZAB&access_keys.1=IKSMDBWVIECPIVNDYZAB&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
+//		ReqBody:        "",
+//		ReqSignature:   "HhscGZcG6xgEME6sGwjbfb9KodcvF4WuJKRP1W3Z16Q%3D",
+//		ReqAccessKeyId: "IKSMDBWVIECPIVNDYZAB",
+//		ReqSource:      constants.LocalSource,
+//	})
+//	if err != nil {
+//		fmt.Printf("error message: %s", err.Error())
+//	}
+//	require.Nil(t, err, "%+v", err)
+//}
 
-	client := pbsvcaccount.NewAccountClient(conn)
-	logger := glog.NewDefault()
-
-	worker := idgenerator.New("")
-	reqId, _ := worker.Take()
-
-	ln := logger.Clone()
-	ln.WithFields().AddString("rid", reqId)
-	ctx = glog.WithContext(ctx, ln)
-	ctx = gtrace.ContextWithId(ctx, reqId)
-	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
-		ReqMethod:      "GET",
-		ReqPath:        "/iaas",
-		ReqQueryString: "access_key_id=NOTEXISTKEY&access_keys.1=NOTEXISTKEY&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
-		ReqBody:        "",
-		ReqSignature:   "HhscGZcG6xgEME6sGwjbfb9KodcvF4WuJKRP1W3Z16Q%3D",
-		ReqAccessKeyId: "NOTEXISTKEY",
-		ReqSource:      constants.LocalSource,
-	})
-	if err != nil {
-		fmt.Printf("error message: %s", err.Error())
-	}
-	require.NotNilf(t, err, "%+v", err)
-}
-
-func TestSignatureQingcloudWithNotExistKey(t *testing.T) {
-	address := "127.0.0.1:9110"
-	lp := glog.NewDefault()
-	ctx := glog.WithContext(context.Background(), lp)
-	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address: address,
-	})
-
-	require.Nil(t, err, "%+v", err)
-
-	client := pbsvcaccount.NewAccountClient(conn)
-	logger := glog.NewDefault()
-
-	worker := idgenerator.New("")
-	reqId, _ := worker.Take()
-
-	ln := logger.Clone()
-	ln.WithFields().AddString("rid", reqId)
-
-	ctx = glog.WithContext(ctx, ln)
-	ctx = gtrace.ContextWithId(ctx, reqId)
-	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
-		ReqMethod:      "GET",
-		ReqPath:        "/staging/v1/workspace/",
-		ReqQueryString: "access_key_id=NOTEXISTKEY&limit=10&offset=0&owner=usr-CVIshpN1&service=bigdata&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-08-18T08%3A55%3A46Z&timestamp=2021-08-18T08%3A55%3A46Z&version=1",
-		ReqBody:        "null",
-		ReqSignature:   "xwd%2BbqeqwQkMrBVaGbQ1yBdm0F6Y198vf1dHnUp0Uj4%3D",
-		ReqAccessKeyId: "NOTEXISTKEY",
-		ReqSource:      constants.QingcloudSource,
-	})
-	if err != nil {
-		fmt.Printf("error message: %s", err.Error())
-	}
-	require.NotNilf(t, err, "%+v", err)
-
-}
-
-func TestSignatureWithDefaultSource(t *testing.T) {
-	address := "127.0.0.1:9110"
-	lp := glog.NewDefault()
-	ctx := glog.WithContext(context.Background(), lp)
-	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address: address,
-	})
-
-	require.Nil(t, err, "%+v", err)
-
-	client := pbsvcaccount.NewAccountClient(conn)
-	logger := glog.NewDefault()
-
-	worker := idgenerator.New("")
-	reqId, _ := worker.Take()
-
-	ln := logger.Clone()
-	ln.WithFields().AddString("rid", reqId)
-	ctx = glog.WithContext(ctx, ln)
-	ctx = gtrace.ContextWithId(ctx, reqId)
-
-	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
-		ReqMethod:      "GET",
-		ReqPath:        "/staging/v1/workspace/",
-		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&reverse=True&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&sort_by=created&version=1&limit=10&offset=0&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
-		ReqBody:        "null",
-		ReqSignature:   "UIXVtLYN2MioTSzxdqranwqB%2BO4VHWZ7yFIiSr%2FGNqQ%3D",
-		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
-	})
-	require.Nil(t, err, "%+v", err)
-
-	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
-		ReqMethod:      "GET",
-		ReqPath:        "/api/region/",
-		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
-		ReqBody:        "null",
-		ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
-		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
-	})
-	require.Nil(t, err, "%+v", err)
-}
-
-func TestSignatureLocal(t *testing.T) {
-	address := "127.0.0.1:9110"
-	lp := glog.NewDefault()
-	ctx := glog.WithContext(context.Background(), lp)
-	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address: address,
-	})
-
-	require.Nil(t, err, "%+v", err)
-
-	client := pbsvcaccount.NewAccountClient(conn)
-	logger := glog.NewDefault()
-
-	worker := idgenerator.New("")
-	reqId, _ := worker.Take()
-
-	ln := logger.Clone()
-	ln.WithFields().AddString("rid", reqId)
-	ctx = glog.WithContext(ctx, ln)
-	ctx = gtrace.ContextWithId(ctx, reqId)
-	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
-		ReqMethod:      "GET",
-		ReqPath:        "/iaas",
-		ReqQueryString: "access_key_id=IKSMDBWVIECPIVNDYZAB&access_keys.1=IKSMDBWVIECPIVNDYZAB&action=DescribeAccessKeys&limit=20&offset=0&signature_method=HmacSHA256&signature_version=1&time_stamp=2021-07-07T14%3A35%3A05Z&verbose=0",
-		ReqBody:        "",
-		ReqSignature:   "HhscGZcG6xgEME6sGwjbfb9KodcvF4WuJKRP1W3Z16Q%3D",
-		ReqAccessKeyId: "IKSMDBWVIECPIVNDYZAB",
-		ReqSource:      constants.LocalSource,
-	})
-	if err != nil {
-		fmt.Printf("error message: %s", err.Error())
-	}
-	require.Nil(t, err, "%+v", err)
-}
-
-func TestSignatureQingcloud(t *testing.T) {
-	address := "127.0.0.1:9110"
-	lp := glog.NewDefault()
-	ctx := glog.WithContext(context.Background(), lp)
-	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
-		Address: address,
-	})
-
-	require.Nil(t, err, "%+v", err)
-
-	client := pbsvcaccount.NewAccountClient(conn)
-	logger := glog.NewDefault()
-
-	worker := idgenerator.New("")
-	reqId, _ := worker.Take()
-
-	ln := logger.Clone()
-	ln.WithFields().AddString("rid", reqId)
-
-	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
-		ReqMethod:      "GET",
-		ReqPath:        "/staging/v1/workspace/",
-		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&reverse=True&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&sort_by=created&version=1&limit=10&offset=0&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
-		ReqBody:        "null",
-		ReqSignature:   "UIXVtLYN2MioTSzxdqranwqB%2BO4VHWZ7yFIiSr%2FGNqQ%3D",
-		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
-		ReqSource:      constants.QingcloudSource,
-	})
-	require.Nil(t, err, "%+v", err)
-
-	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
-		ReqMethod:      "GET",
-		ReqPath:        "/api/region/",
-		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
-		ReqBody:        "null",
-		ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
-		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
-		ReqSource:      constants.QingcloudSource,
-	})
-	require.Nil(t, err, "%+v", err)
-
-}
+//func TestSignatureQingcloud(t *testing.T) {
+//	address := "127.0.0.1:9110"
+//	lp := glog.NewDefault()
+//	ctx := glog.WithContext(context.Background(), lp)
+//	conn, err := grpcwrap.NewConn(ctx, &grpcwrap.ClientConfig{
+//		Address: address,
+//	})
+//
+//	require.Nil(t, err, "%+v", err)
+//
+//	client := pbsvcaccount.NewAccountClient(conn)
+//	logger := glog.NewDefault()
+//
+//	worker := idgenerator.New("")
+//	reqId, _ := worker.Take()
+//
+//	ln := logger.Clone()
+//	ln.WithFields().AddString("rid", reqId)
+//
+//	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
+//		ReqMethod:      "GET",
+//		ReqPath:        "/staging/v1/workspace/",
+//		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&reverse=True&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&sort_by=created&version=1&limit=10&offset=0&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
+//		ReqBody:        "null",
+//		ReqSignature:   "UIXVtLYN2MioTSzxdqranwqB%2BO4VHWZ7yFIiSr%2FGNqQ%3D",
+//		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
+//		ReqSource:      constants.QingcloudSource,
+//	})
+//	require.Nil(t, err, "%+v", err)
+//
+//	_, err = client.ValidateRequestSignature(ctx, &pbrequest.ValidateRequestSignature{
+//		ReqMethod:      "GET",
+//		ReqPath:        "/api/region/",
+//		ReqQueryString: sortReqQueryString("signature_method=HmacSHA256&service=bigdata&timestamp=2021-09-18T07%3A56%3A50Z&signature_version=1&version=1&access_key_id=ZMEVDSBCKAVSLHJECTUU&owner=usr-CVIshpN1&time_stamp=2021-09-18T07%3A56%3A50Z"),
+//		ReqBody:        "null",
+//		ReqSignature:   "5AGQsTinQLwy%2BYqilXVDmFlMjaAAEPsV3f1PP7uGepo%3D",
+//		ReqAccessKeyId: "ZMEVDSBCKAVSLHJECTUU",
+//		ReqSource:      constants.QingcloudSource,
+//	})
+//	require.Nil(t, err, "%+v", err)
+//
+//}
 
 func TestUsersWithDefaultSource(t *testing.T) {
 	address := "127.0.0.1:9110"
