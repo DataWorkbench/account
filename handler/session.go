@@ -2,19 +2,21 @@ package handler
 
 import (
 	"context"
+	"time"
+
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/utils/password"
+	"github.com/DataWorkbench/glog"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
-	"time"
 )
 
 func CheckSession(ctx context.Context, req *pbrequest.CheckSession) (*pbresponse.CheckSession, error) {
-	accessKey, err := cache.GetSession(req.Session)
+	accessKey, err := cache.GetSession(ctx, req.Session)
 	if err != nil {
 		return nil, err
 	}
@@ -31,6 +33,7 @@ func CheckSession(ctx context.Context, req *pbrequest.CheckSession) (*pbresponse
 }
 
 func CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbresponse.CreateSession, error) {
+	lg := glog.FromContext(ctx)
 	var user *executor.User
 	var accessKey *executor.AccessKey
 	err := gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
@@ -43,7 +46,7 @@ func CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbrespon
 			return xErr
 		}
 		if !req.IgnorePassword && !password.Check(req.Password, user.Password) {
-			logger.Warn().String(req.Password, user.Password).Fire()
+			lg.Warn().String(req.Password, user.Password).Fire()
 			xErr = qerror.UserNameOrPasswordError
 			return xErr
 		}
@@ -71,7 +74,7 @@ func CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbrespon
 		return nil, err
 	}
 	session := password.GenerateSession()
-	if err = cache.CacheSession(accessKey, session, user.UserID); err != nil {
+	if err = cache.CacheSession(ctx, accessKey, session, user.UserID); err != nil {
 		return nil, err
 	}
 	return &pbresponse.CreateSession{Session: session}, nil

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/DataWorkbench/account/controller"
+	"github.com/DataWorkbench/account/options"
 	"github.com/DataWorkbench/common/utils/logutil"
 
 	"github.com/DataWorkbench/account/config"
@@ -71,7 +72,9 @@ func Start() (err error) {
 	}
 	ctx = gtrace.ContextWithTracer(ctx, tracer)
 
-	grpcwrap.SetLogger(lp, cfg.GRPCLog)
+	if err = options.Init(ctx, cfg); err != nil {
+		return
+	}
 
 	// init gorm.DB
 	db, err = gormwrap.NewMySQLConn(ctx, cfg.MySQL)
@@ -92,9 +95,11 @@ func Start() (err error) {
 	}
 
 	executor.Init(db, lp, cfg)
-	handler.Init(handler.WithCfg(cfg), handler.WithRedis(rdb, ctx), handler.WithLogger(lp), handler.WithIdGenerator())
+	handler.Init(handler.WithRedis(rdb, ctx))
 
 	rpcServer.RegisterService(&pbsvcaccount.Account_ServiceDesc, &controller.AccountServer{})
+
+	rpcServer.RegisterService(&pbsvcaccount.AccountProxy_ServiceDesc, &controller.AccountProxy{})
 
 	// handle signal
 	sigGroup := []os.Signal{syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM}

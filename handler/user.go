@@ -8,28 +8,31 @@ import (
 
 	"github.com/DataWorkbench/account/executor"
 	"github.com/DataWorkbench/account/internal/source"
+	"github.com/DataWorkbench/account/options"
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/utils/password"
+	"github.com/DataWorkbench/glog"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
 )
 
-func getUsers(userIds []string, source string) ([]*pbmodel.User, []string, []string, error) {
+func getUsers(ctx context.Context, userIds []string, source string) ([]*pbmodel.User, []string, []string, error) {
+	lg := glog.FromContext(ctx)
 	var uncachedUsers []string
 	var cachedUsers []*pbmodel.User
 	var notExistsUsers []string
 	for i := 0; i < len(userIds); i++ {
-		user, err := cache.GetUser(userIds[i], source)
+		user, err := cache.GetUser(ctx, userIds[i], source)
 		if err != nil {
 			if err == qerror.ResourceNotExists {
 				notExistsUsers = append(notExistsUsers, userIds[i])
 				continue
 			}
-			logger.Error().String("Get user from cache error", err.Error())
+			lg.Error().String("Get user from cache error", err.Error())
 		}
 		if user != nil {
 			cachedUsers = append(cachedUsers, user)
@@ -41,17 +44,18 @@ func getUsers(userIds []string, source string) ([]*pbmodel.User, []string, []str
 	for i := 0; i < len(cachedUsers); i++ {
 		cachedUserIds = append(cachedUserIds, cachedUsers[i].UserId)
 	}
-	logger.Debug().String("cachedUsers", strings.Join(cachedUserIds, ",")).Fire()
-	logger.Debug().String("uncachedUsers", strings.Join(uncachedUsers, ",")).Fire()
-	logger.Debug().String("notExistsUsers", strings.Join(notExistsUsers, ",")).Fire()
+	lg.Debug().String("cachedUsers", strings.Join(cachedUserIds, ",")).Fire()
+	lg.Debug().String("uncachedUsers", strings.Join(uncachedUsers, ",")).Fire()
+	lg.Debug().String("notExistsUsers", strings.Join(notExistsUsers, ",")).Fire()
 	return cachedUsers, uncachedUsers, notExistsUsers, nil
 }
 
 func DescribeUsers(ctx context.Context, req *pbrequest.DescribeUsers) ([]*pbmodel.User, int64, error) {
+	lg := glog.FromContext(ctx)
 	if req.ReqSource == "" {
 		req.ReqSource = executor.AccountExecutor.GetConf().Source
 	}
-	cachedUsers, uncachedUsers, notExistsUsers, err := getUsers(req.Users, req.ReqSource)
+	cachedUsers, uncachedUsers, notExistsUsers, err := getUsers(ctx, req.Users, req.ReqSource)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -59,7 +63,7 @@ func DescribeUsers(ctx context.Context, req *pbrequest.DescribeUsers) ([]*pbmode
 	var totalCount int64
 	var userSet []*pbmodel.User
 	if len(uncachedUsers) != 0 {
-		users, totalCount, err = source.SelectSource(req.ReqSource, cfg, ctx).DescribeUsers(uncachedUsers, int(req.Limit)-len(cachedUsers), int(req.Offset))
+		users, totalCount, err = source.SelectSource(req.ReqSource, options.Config, ctx).DescribeUsers(uncachedUsers, int(req.Limit)-len(cachedUsers), int(req.Offset))
 		if err != nil {
 			return nil, 0, err
 		}
@@ -77,15 +81,15 @@ func DescribeUsers(ctx context.Context, req *pbrequest.DescribeUsers) ([]*pbmode
 		}
 	}
 	if len(notExistsUsers) != 0 {
-		logger.Warn().String("Users not Exists", strings.Join(notExistsUsers, ",")).Fire()
+		lg.Warn().String("Users not Exists", strings.Join(notExistsUsers, ",")).Fire()
 		for _, userID := range notExistsUsers {
-			cache.CacheNotExistUser(userID, req.ReqSource)
+			cache.CacheNotExistUser(ctx, userID, req.ReqSource)
 		}
 	}
 
 	totalCount += int64(len(cachedUsers))
 	userSet = append(userSet, cachedUsers...)
-	if err := cache.CacheUsers(userSet, req.ReqSource); err != nil {
+	if err := cache.CacheUsers(ctx, userSet, req.ReqSource); err != nil {
 		return nil, 0, err
 	}
 
@@ -94,7 +98,7 @@ func DescribeUsers(ctx context.Context, req *pbrequest.DescribeUsers) ([]*pbmode
 }
 
 func CreateUser(ctx context.Context, req *pbrequest.CreateUser) (*pbmodel.User, error) {
-	id, err := IdGeneratorUser.Take()
+	id, err := options.IdGeneratorUser.Take()
 	if err != nil {
 		return nil, err
 	}
@@ -145,6 +149,7 @@ func CreateUser(ctx context.Context, req *pbrequest.CreateUser) (*pbmodel.User, 
 }
 
 func UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, error) {
+	lg := glog.FromContext(ctx)
 	var userInfo *executor.User
 	var err error
 	req.Password, err = password.Encode(req.Password)
@@ -172,13 +177,14 @@ func UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.User, 
 	if err != nil {
 		return nil, err
 	}
-	if ignoreError := cache.DelUser(req.UserId, false); ignoreError != nil {
-		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
+	if ignoreError := cache.DelUser(ctx, req.UserId, false); ignoreError != nil {
+		lg.Warn().String("delete user cache error", ignoreError.Error()).Fire()
 	}
 	return userInfo.ToUserReply(), nil
 }
 
 func DeleteUser(ctx context.Context, req *pbrequest.DeleteUser) error {
+	lg := glog.FromContext(ctx)
 	err := gormwrap.ExecuteFuncWithTxn(ctx, executor.AccountExecutor.Db, func(tx *gorm.DB) error {
 		var xErr error
 
@@ -187,8 +193,8 @@ func DeleteUser(ctx context.Context, req *pbrequest.DeleteUser) error {
 		}
 		return xErr
 	})
-	if ignoreError := cache.DelUser(req.UserId, true); ignoreError != nil {
-		logger.Warn().String("delete user cache error", ignoreError.Error()).Fire()
+	if ignoreError := cache.DelUser(ctx, req.UserId, true); ignoreError != nil {
+		lg.Warn().String("delete user cache error", ignoreError.Error()).Fire()
 	}
 	return err
 }

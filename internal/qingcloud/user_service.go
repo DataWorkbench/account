@@ -37,7 +37,6 @@ func (u *User) ToUserReply() *pbmodel.User {
 		Phone:         u.Phone,
 		Status:        u.Status,
 		Role:          u.Role,
-		Currency:      u.Currency,
 		GravatarEmail: u.GravatarEmail,
 		Privilege:     u.Privilege,
 		Zones:         u.Zones,

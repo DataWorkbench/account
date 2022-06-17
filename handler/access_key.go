@@ -7,6 +7,7 @@ import (
 	"github.com/DataWorkbench/account/internal/source"
 	"github.com/DataWorkbench/account/options"
 	"github.com/DataWorkbench/common/qerror"
+	"github.com/DataWorkbench/glog"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 )
 
@@ -61,33 +62,34 @@ import (
 //}
 
 func DescribeAccessKey(ctx context.Context, input *pbrequest.DescribeAccessKey) (output *executor.AccessKey, err error) {
-	secretAccessKey, err := cache.GetAccessKey(input.AccessKeyId, options.Config.Source)
+	lg := glog.FromContext(ctx)
+	secretAccessKey, err := cache.GetAccessKey(ctx, input.AccessKeyId, options.Config.Source)
 	if err != nil {
 		if err == qerror.ResourceNotExists {
-			logger.Debug().String("Access key not exist from cache", input.AccessKeyId).Fire()
+			lg.Debug().String("Access key not exist from cache", input.AccessKeyId).Fire()
 			return nil, qerror.AccessKeyNotExists.Format(input.AccessKeyId)
 		}
-		logger.Error().String("Get access key from cache error", err.Error())
+		lg.Error().String("Get access key from cache error", err.Error())
 	}
 	if secretAccessKey == nil {
-		logger.Debug().String("Get access key from source", input.AccessKeyId)
-		secretAccessKey, err = source.SelectSource(cfg.Source, cfg, ctx).GetSecretAccessKey(input.AccessKeyId)
+		lg.Debug().String("Get access key from source", input.AccessKeyId)
+		secretAccessKey, err = source.SelectSource(options.Config.Source, options.Config, ctx).GetSecretAccessKey(input.AccessKeyId)
 		if err != nil {
 			if err == qerror.ResourceNotExists {
-				logger.Debug().String("Access key not exist from source", input.AccessKeyId).Fire()
-				if err = cache.CacheNotExistAccessKey(input.AccessKeyId, options.Config.Source); err != nil {
+				lg.Debug().String("Access key not exist from source", input.AccessKeyId).Fire()
+				if err = cache.CacheNotExistAccessKey(ctx, input.AccessKeyId, options.Config.Source); err != nil {
 					return nil, err
 				}
 				return nil, qerror.AccessKeyNotExists.Format(input.AccessKeyId)
 			}
 			return nil, err
 		}
-		logger.Debug().String("Get access key from source successful", input.AccessKeyId).Fire()
-		if err = cache.CacheAccessKey(secretAccessKey, input.AccessKeyId, options.Config.Source); err != nil {
-			logger.Warn().String("cache access key error", err.Error())
+		lg.Debug().String("Get access key from source successful", input.AccessKeyId).Fire()
+		if err = cache.CacheAccessKey(ctx, secretAccessKey, input.AccessKeyId, options.Config.Source); err != nil {
+			lg.Warn().String("cache access key error", err.Error())
 		}
 	} else {
-		logger.Debug().String("Get access key from cache successful", input.AccessKeyId).Fire()
+		lg.Debug().String("Get access key from cache successful", input.AccessKeyId).Fire()
 	}
 	return secretAccessKey, nil
 }

@@ -76,12 +76,12 @@ github.com/BurntSushi/toml v0.4.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbi
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
-github.com/DataWorkbench/common v0.0.0-20220615091158-ddf61e85faea h1:l/3Ih+z/Ot0MRS3fStUNE+sSwBNSvuAegwe0r0gDJlE=
-github.com/DataWorkbench/common v0.0.0-20220615091158-ddf61e85faea/go.mod h1:HqeYC7n3yB8tX1yinrd/j64iCYFkI3feHT0lI04HIBU=
+github.com/DataWorkbench/common v0.0.0-20220617031453-09672c5d3ef6 h1:8EQuGkBWk54UmYEomxWnfWjAKefU8JyjpganWnvPeig=
+github.com/DataWorkbench/common v0.0.0-20220617031453-09672c5d3ef6/go.mod h1:Q6lIKHoWfjjfYnfSFXaBRXM7q734PoRFlQVdTB4uwD4=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704 h1:XRck+LCallgKe6pR28PXsPadPTozMPwvrcx0GVf/b6g=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704/go.mod h1:zymxJLXn162xdWYUqIb729S3ZzRQpdTj/LwnW+xxru4=
-github.com/DataWorkbench/gproto v0.0.0-20220615085547-a1b7fe1f788f h1:y29Qeiwnrq1b58ISPk9Z1LDqUjY8OV3/cicPnDZEZUc=
-github.com/DataWorkbench/gproto v0.0.0-20220615085547-a1b7fe1f788f/go.mod h1:URsbdYgzizmCtNECcPw5+eUexwF0O3qf5nUQw/7eang=
+github.com/DataWorkbench/gproto v0.0.0-20220617030940-c951505d782b h1:B4hLQIQuFOZv7YbQ9kvNnCNGw4eN9bVqGry4yUkycnQ=
+github.com/DataWorkbench/gproto v0.0.0-20220617030940-c951505d782b/go.mod h1:URsbdYgzizmCtNECcPw5+eUexwF0O3qf5nUQw/7eang=
 github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd h1:JjlZ3lHQT7XQC1PjeWDIKozvW40E+L4WQqS/EKewBMg=
 github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd/go.mod h1:K2ou8EU8Cto30za+mKbfCXXc8C6BRpyCjg+4E2CRwV4=
 github.com/HdrHistogram/hdrhistogram-go v1.0.1 h1:GX8GAYDuhlFQnI2fRDHQhTlkHMz8bEn0jTI6LJU0mpw=
