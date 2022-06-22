@@ -125,7 +125,30 @@ func DescribeUserByName(tx *gorm.DB, userName string) (info *pbmodel.User, err e
 }
 
 func ChangePassword(tx *gorm.DB, userId, oldPassWord, newPassWord string) (err error) {
-	panic("unrealized")
+	user := &pbmodel.User{}
+	res := tx.Where("user_id = ", userId).Find(user)
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return qerror.ResourceNotExists
+	}
+	verify := secret2.CheckPassword(oldPassWord, user.Password)
+	if !verify {
+		return qerror.InvalidParams
+	}
+	encodePassword, err := secret2.EncodePassword(newPassWord)
+	if err != nil {
+		return err
+	}
+	updates := tx.Table(tableNameNotification).Update("password", encodePassword)
+	if updates.Error != nil {
+		return updates.Error
+	}
+	if updates.RowsAffected == 0 {
+		return updates.Error
+	}
+	return nil
 }
 
 func RestPassword(tx *gorm.DB, userId, newPassWord string) (err error) {
