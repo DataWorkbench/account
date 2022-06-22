@@ -19,6 +19,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	QingcloudSource = "qingcloud"
+	LocalSource     = "local"
+)
+
 var FilePath string
 
 const (
@@ -58,7 +63,7 @@ func loadFromFile(cfg *Config) (err error) {
 	return
 }
 
-// LoadConfig load all configuration from specified file
+// Load load all configuration from specified file
 // Must be set `FilePath` before called
 func Load() (cfg *Config, err error) {
 	cfg = &Config{}

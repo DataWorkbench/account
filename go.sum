@@ -76,12 +76,12 @@ github.com/BurntSushi/toml v0.4.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbi
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
-github.com/DataWorkbench/common v0.0.0-20220617031453-09672c5d3ef6 h1:8EQuGkBWk54UmYEomxWnfWjAKefU8JyjpganWnvPeig=
-github.com/DataWorkbench/common v0.0.0-20220617031453-09672c5d3ef6/go.mod h1:Q6lIKHoWfjjfYnfSFXaBRXM7q734PoRFlQVdTB4uwD4=
+github.com/DataWorkbench/common v0.0.0-20220622054811-1766cbd1c350 h1:tTdUsk9ud3IZfULpGC588s3fADlixMsd18bhgkwWlc4=
+github.com/DataWorkbench/common v0.0.0-20220622054811-1766cbd1c350/go.mod h1:2Qn/k2C8asXNtlwb7+9J7PNA/MZgXJO3XNs2U0XfFUE=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704 h1:XRck+LCallgKe6pR28PXsPadPTozMPwvrcx0GVf/b6g=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704/go.mod h1:zymxJLXn162xdWYUqIb729S3ZzRQpdTj/LwnW+xxru4=
-github.com/DataWorkbench/gproto v0.0.0-20220617030940-c951505d782b h1:B4hLQIQuFOZv7YbQ9kvNnCNGw4eN9bVqGry4yUkycnQ=
-github.com/DataWorkbench/gproto v0.0.0-20220617030940-c951505d782b/go.mod h1:URsbdYgzizmCtNECcPw5+eUexwF0O3qf5nUQw/7eang=
+github.com/DataWorkbench/gproto v0.0.0-20220622054643-81ccbf2d5f72 h1:2w9iMbLl/5uw/H7gt4Ob1dPbPvQlItbpknUQ5HoOPS8=
+github.com/DataWorkbench/gproto v0.0.0-20220622054643-81ccbf2d5f72/go.mod h1:p0j7UkANQc+TO7L8RZIFhrI81jlZsFrXbI+eVn58AuU=
 github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd h1:JjlZ3lHQT7XQC1PjeWDIKozvW40E+L4WQqS/EKewBMg=
 github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd/go.mod h1:K2ou8EU8Cto30za+mKbfCXXc8C6BRpyCjg+4E2CRwV4=
 github.com/HdrHistogram/hdrhistogram-go v1.0.1 h1:GX8GAYDuhlFQnI2fRDHQhTlkHMz8bEn0jTI6LJU0mpw=
@@ -1008,7 +1008,6 @@ github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMB
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/sirupsen/logrus v1.6.0/go.mod h1:7uNnSEd1DgxDLC74fIahvMZmmYsHGZGEOFrfsX/uA88=
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
-github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=
 github.com/sirupsen/logrus v1.8.1/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
 github.com/smartystreets/assertions v1.1.1/go.mod h1:tcbTF8ujkAEcZ8TElKY+i30BzYlVhC/LOxJk7iOWnoo=
@@ -1117,8 +1116,6 @@ github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 github.com/yuin/goldmark v1.4.0/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
-github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible h1:BssizMVdtgROoHKgeHZ6K+BkZ3RjmMyHv1Y0ursBGxU=
-github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible/go.mod h1:q4o/lbL+PCUIGbzyYzAHsbCgh3bQ/LA7VLFRQTlvrcM=
 github.com/yvasiyarov/go-metrics v0.0.0-20140926110328-57bccd1ccd43/go.mod h1:aX5oPXxHm3bOH+xeAttToC8pqch2ScQN/JoXYupl6xs=
 github.com/yvasiyarov/gorelic v0.0.0-20141212073537-a9bba5b9ab50/go.mod h1:NUSPSUX/bi6SeDMUh6brw0nXpxHnc96TguQh0+r/ssA=
 github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f/go.mod h1:GlGEuHIJweS1mbCqG+7vt2nvWLzLLnRHbXz5JKd/Qbg=
