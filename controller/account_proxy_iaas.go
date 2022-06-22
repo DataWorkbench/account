@@ -102,6 +102,7 @@ func (x *AccountProxyIaaS) iaasAccessKeyToAccessKey(iaasKey *pbiaas.AccessKey) *
 	key := &pbmodel.AccessKey{
 		AccessKeyId:     iaasKey.AccessKeyId,
 		SecretAccessKey: iaasKey.SecretAccessKey,
+		Name:            iaasKey.AccessKeyName,
 		Owner:           iaasKey.Owner,
 		Controller:      pbmodel.AccessKey_Controller(pbmodel.AccessKey_Controller_value[iaasKey.Controller]),
 		Status:          pbmodel.AccessKey_Status(pbmodel.AccessKey_Status_value[iaasKey.Status]),
