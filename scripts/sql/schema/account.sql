@@ -27,3 +27,17 @@ CREATE TABLE `access_key` (
 
     PRIMARY KEY (`access_key_id`)
 ) ENGINE=InnoDB;
+
+
+CREATE TABLE `notification` (
+    `owner` varchar(64) NOT NULL,
+    `id` varchar(256) NOT NULL,
+    `name` varchar(256) NOT NULL,
+    `description` varchar(512) NOT NULL DEFAULT '',
+    `email` varchar(64) NOT NULL,
+    `created` bigint(20) unsigned NOT NULL,
+    `updated` bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `notification_UN` (`name`,`email`)
+) ENGINE=InnoDB;
+
