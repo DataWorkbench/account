@@ -6,69 +6,49 @@ import (
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
+	"math"
 )
-
-type Notification struct {
-	Owner       string `yaml:"owner" gorm:"column:owner;"`
-	Id          string `yaml:"id" gorm:"column:id;primaryKey"`
-	Name        string `yaml:"name" gorm:"column:name;"`
-	Description string `yaml:"description" gorm:"column:description;"`
-	Email       string `yaml:"email" gorm:"column:email;"`
-	Created     int64  `yaml:"created" gorm:"column:created;autoCreateTime;"`
-	Updated     int64  `yaml:"updated" gorm:"column:updated;autoUpdateTime;"`
-}
-
-func (n Notification) TableName() string {
-	return tableNameNotification
-}
 
 func ListNotifications(tx *gorm.DB, input *pbrequest.ListNotifications) (output *pbresponse.ListNotifications, err error) {
 	var count int64
-	var notificatuions []Notification
+	var notifications []*pbmodel.Notification
 	offset := input.Offset
 	limit := input.Limit
 	userid := input.UserId
-	res := tx.Where("owner = ?", userid).Count(&count).Offset(int((offset - 1) * limit)).Limit(int(limit)).Find(&notificatuions)
+	if offset <= 0 {
+		offset = 1
+	}
+	if limit <= 0 {
+		limit = 10
+	}
+	res := tx.Table(tableNameNotification).Where("owner = ?", userid).Count(&count).Offset(int((offset - 1) * limit)).Limit(int(limit)).Find(&notifications)
 	err = res.Error
 	if err != nil {
 		return nil, err
 	}
-	total := int64(len(notificatuions))
+	totalPage := math.Ceil(float64(count) / float64(limit))
 	reply := &pbresponse.ListNotifications{
 		Infos:   nil,
-		Total:   total,
+		Total:   count,
 		HasMore: false,
 	}
-	var temp []*pbmodel.Notification
-	if count > total {
+	reply.Infos = notifications
+	if int64(offset) < int64(totalPage) {
 		reply.HasMore = true
 	}
-	for _, v := range notificatuions {
-		n := &pbmodel.Notification{
-			Owner:       v.Owner,
-			Id:          v.Id,
-			Name:        v.Name,
-			Description: v.Description,
-			Email:       v.Email,
-			Created:     v.Created,
-			Updated:     v.Updated,
-		}
-		temp = append(temp, n)
-	}
-	reply.Infos = temp
 	return reply, nil
 }
 
 func CreateNotification(tx *gorm.DB, owner, id, name, description, email string) (err error) {
-	notification := &Notification{}
-	err = tx.Table(tableNameNotification).Where("name = ? OR email = ?", name, email).Find(notification).Error
+	notification := &pbmodel.Notification{}
+	err = tx.Table(tableNameNotification).Where("name = ? OR email = ?", name, email).Find(&pbmodel.Notification{}).Error
 	if err != nil {
 		return err
 	}
 	if notification.Name != "" || notification.Email != "" {
 		return qerror.ResourceAlreadyExists
 	}
-	err = tx.Create(&Notification{
+	err = tx.Table(tableNameNotification).Create(&pbmodel.Notification{
 		Owner:       owner,
 		Id:          id,
 		Name:        name,
@@ -83,7 +63,7 @@ func CreateNotification(tx *gorm.DB, owner, id, name, description, email string)
 
 func DeleteNotifications(tx *gorm.DB, nfIds []string) (err error) {
 	for _, id := range nfIds {
-		de := tx.Where("id = ?", id).Delete(&Notification{})
+		de := tx.Table(tableNameNotification).Where("id = ?", id).Delete(&pbmodel.Notification{})
 		if de.Error != nil {
 			return err
 		}
@@ -96,10 +76,7 @@ func UpdateNotification(tx *gorm.DB, id, name, description, email string) (err e
 	if conflict {
 		return qerror.ResourceAlreadyExists
 	}
-	var n = &Notification{
-		Id: id,
-	}
-	updates := tx.Model(n).Updates(&Notification{
+	updates := tx.Table(tableNameNotification).Where("id = ?", id).Updates(&pbmodel.Notification{
 		Name:        name,
 		Description: description,
 		Email:       email,
@@ -118,16 +95,4 @@ func CheckUpdateNotificationConflict(tx *gorm.DB, id, name, email string) bool {
 		return true
 	}
 	return false
-}
-
-func notification2PbModel(notification *Notification) *pbmodel.Notification {
-	return &pbmodel.Notification{
-		Owner:       notification.Owner,
-		Id:          notification.Id,
-		Name:        notification.Name,
-		Description: notification.Description,
-		Email:       notification.Email,
-		Created:     notification.Created,
-		Updated:     notification.Updated,
-	}
 }
