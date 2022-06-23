@@ -66,8 +66,15 @@ func (x *AccountManagerLocal) DeleteUsers(ctx context.Context, req *pbrequest.De
 	}
 	return options.EmptyRPCReply, nil
 }
-func (x *AccountManagerLocal) ChangeUserPassword(context.Context, *pbrequest.ChangeUserPassword) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChangeUserPassword not implemented")
+
+// TODO
+func (x *AccountManagerLocal) ChangeUserPassword(ctx context.Context, req *pbrequest.ChangeUserPassword) (*pbmodel.EmptyStruct, error) {
+	tx := options.DBConn.WithContext(ctx)
+	err := user.ChangePassword(tx, req.UserId, req.OldPassword, req.NewPassword)
+	if err != nil {
+		return nil, err
+	}
+	return nil, err
 }
 func (x *AccountManagerLocal) ResetUserPassword(context.Context, *pbrequest.ResetUserPassword) (*pbmodel.EmptyStruct, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetUserPassword not implemented")
@@ -100,13 +107,26 @@ func (x *AccountManagerLocal) CheckSession(ctx context.Context, req *pbrequest.C
 	return reply, nil
 }
 func (x *AccountManagerLocal) ListNotifications(ctx context.Context, req *pbrequest.ListNotifications) (*pbresponse.ListNotifications, error) {
+
 	return nil, status.Errorf(codes.Unimplemented, "method ListNotifications not implemented")
 }
 func (x *AccountManagerLocal) DescribeNotification(ctx context.Context, req *pbrequest.DescribeNotification) (*pbresponse.DescribeNotification, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeNotification not implemented")
 }
 func (x *AccountManagerLocal) CreateNotification(ctx context.Context, req *pbrequest.CreateNotification) (*pbresponse.CreateNotification, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateNotification not implemented")
+	take, err := options.IdGeneratorNotification.Take()
+	if err != nil {
+		return nil, err
+	}
+	tx := options.DBConn.WithContext(ctx)
+	err = user.CreateNotification(tx, req.UserId, take, req.Name, req.Description, req.Email)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.CreateNotification{
+		Id: take,
+	}
+	return reply, nil
 }
 func (x *AccountManagerLocal) UpdateNotification(ctx context.Context, req *pbrequest.UpdateNotification) (*pbmodel.EmptyStruct, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateNotification not implemented")

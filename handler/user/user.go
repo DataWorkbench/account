@@ -141,7 +141,7 @@ func ChangePassword(tx *gorm.DB, userId, oldPassWord, newPassWord string) (err e
 	if err != nil {
 		return err
 	}
-	updates := tx.Table(tableNameNotification).Update("password", encodePassword)
+	updates := tx.Model(user).Update("password", encodePassword)
 	if updates.Error != nil {
 		return updates.Error
 	}
@@ -172,4 +172,13 @@ func DeleteUserByIds(tx *gorm.DB, userIds []string) (err error) {
 		return
 	}
 	return
+}
+
+func ExistsUsername(tx *gorm.DB, name string) bool {
+	var count int64
+	tx.Table(tableNameUser).Where("name = ?", name).Count(&count)
+	if count > 0 {
+		return true
+	}
+	return false
 }

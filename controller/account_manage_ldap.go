@@ -2,6 +2,10 @@ package controller
 
 import (
 	"context"
+	"github.com/DataWorkbench/account/handler/user"
+	"github.com/DataWorkbench/account/options"
+	"github.com/DataWorkbench/common/gormwrap"
+	"gorm.io/gorm"
 
 	"github.com/DataWorkbench/gproto/xgo/service/pbsvcaccount"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
@@ -44,19 +48,62 @@ func (x *AccountManagerLdap) DeleteAccessKeys(ctx context.Context, req *pbreques
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccessKeys not implemented")
 }
 func (x *AccountManagerLdap) DescribeAccessKey(ctx context.Context, req *pbrequest.DescribeAccessKey) (*pbresponse.DescribeAccessKey, error) {
+	// TODO
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeAccessKey not implemented")
 }
 func (x *AccountManagerLdap) CreateAccessKey(ctx context.Context, req *pbrequest.CreateAccessKey) (*pbresponse.CreateAccessKey, error) {
+	// TODO
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccessKey not implemented")
 }
 func (x *AccountManagerLdap) UpdatedAccessKey(ctx context.Context, req *pbrequest.UpdatedAccessKey) (*pbmodel.EmptyStruct, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatedAccessKey not implemented")
 }
 func (x *AccountManagerLdap) CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbresponse.CreateSession, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateSession not implemented")
+	// TODO
+	tx := options.DBConn.WithContext(ctx)
+	userName := req.UserName
+	password := req.Password
+	res, err := user.LdapProvider.Authentication(userName, password)
+	if err != nil {
+		return nil, err
+	}
+	mail := res["mail"].(string)
+	exist := user.ExistsUsername(tx, userName)
+	if !exist {
+		userId, err := options.IdGeneratorUser.Take()
+		if err != nil {
+			return nil, err
+		}
+		err = gormwrap.ExecuteFuncWithTxn(ctx, options.DBConn, func(tx *gorm.DB) error {
+			if xErr := user.CreateUser(tx, userId, userName, password, mail); err != nil {
+				return xErr
+			}
+			if xErr := user.InitAccessKey(tx, userId); xErr != nil {
+				return xErr
+			}
+			return nil
+		})
+	}
+	userSet, sessionId, err := user.CreateSession(ctx, tx, options.RedisClient, req.UserName, req.Password, req.IgnorePassword)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.CreateSession{
+		SessionId: sessionId,
+		UserSet:   userSet,
+	}
+	return reply, nil
 }
 func (x *AccountManagerLdap) CheckSession(ctx context.Context, req *pbrequest.CheckSession) (*pbresponse.CheckSession, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckSession not implemented")
+	userSet, keySet, err := user.CheckSession(ctx, options.RedisClient, req.SessionId)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.CheckSession{
+		UserSet: userSet,
+		KeySet:  keySet,
+	}
+	return reply, nil
 }
 func (x *AccountManagerLdap) ListNotifications(ctx context.Context, req *pbrequest.ListNotifications) (*pbresponse.ListNotifications, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListNotifications not implemented")

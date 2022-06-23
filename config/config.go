@@ -40,6 +40,26 @@ type Config struct {
 	Qingcloud     *iaas.Config           `json:"iaas"           yaml:"iaas"           env:"IAAS"                validate:"required"`
 	Source        string                 `json:"source"         yaml:"source"         env:"SOURCE"              validate:"required"`
 	Tracer        *gtrace.Config         `json:"tracer"         yaml:"tracer"         env:"TRACER"              validate:"required"`
+	Ldap          *LdapConfig            `json:"ldap"           yaml:"ldap"           env:"LDAP"`
+}
+
+type LdapConfig struct {
+	Url                  string `yaml:"url"`
+	ReadTimeout          int    `yaml:"readTimeout"`
+	StartTLS             bool   `yaml:"startTLS"`
+	InsecureSkipVerify   bool   `yaml:"insecureSkipVerify"`
+	RootCA               string `yaml:"rootCA"`
+	RootCAData           string `yaml:"rootCAData"`
+	ManagerDN            string `yaml:"managerDN"`
+	ManagerPassword      string `yaml:"managerPassword"`
+	UserSearchBase       string `yaml:"userSearchBase"`
+	UserSearchFilter     string `yaml:"userSearchFilter"`
+	GroupSearchBase      string `yaml:"groupSearchBase"`
+	GroupSearchFilter    string `yaml:"groupSearchFilter"`
+	UserMemberAttribute  string `yaml:"userMemberAttribute"`
+	GroupMemberAttribute string `yaml:"groupMemberAttribute"`
+	LoginAttribute       string `yaml:"loginAttribute"`
+	MailAttribute        string `yaml:"mailAttribute"`
 }
 
 func loadFromFile(cfg *Config) (err error) {
