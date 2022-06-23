@@ -99,13 +99,22 @@ func (x *AccountProxyIaaS) iaasAccessKeyToAccessKey(iaasKey *pbiaas.AccessKey) *
 	if iaasKey == nil {
 		return nil
 	}
+	controller, ok := pbmodel.AccessKey_Controller_value[iaasKey.Controller]
+	if !ok {
+		controller = int32(pbmodel.AccessKey_self)
+	}
+	status, ok := pbmodel.AccessKey_Status_value[iaasKey.Status]
+	if !ok {
+		status = int32(pbmodel.AccessKey_active)
+	}
+
 	key := &pbmodel.AccessKey{
 		AccessKeyId:     iaasKey.AccessKeyId,
 		SecretAccessKey: iaasKey.SecretAccessKey,
 		Name:            iaasKey.AccessKeyName,
 		Owner:           iaasKey.Owner,
-		Controller:      pbmodel.AccessKey_Controller(pbmodel.AccessKey_Controller_value[iaasKey.Controller]),
-		Status:          pbmodel.AccessKey_Status(pbmodel.AccessKey_Status_value[iaasKey.Status]),
+		Controller:      pbmodel.AccessKey_Controller(controller),
+		Status:          pbmodel.AccessKey_Status(status),
 		Description:     iaasKey.Description,
 		IpWhiteList:     iaasKey.IpWhiteList,
 		Created:         iaas.TimeStringToTimestampSecond(iaasKey.CreateTime),
