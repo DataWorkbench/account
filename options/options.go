@@ -25,8 +25,11 @@ const (
 
 var EmptyRPCReply = &pbmodel.EmptyStruct{}
 
+const NfPrefix = "nf"
+
 var (
-	IdGeneratorUser = idgenerator.New(constants.IdPrefixUser, idgenerator.WithInstanceId(constants.IdInstanceUser))
+	IdGeneratorUser         = idgenerator.New(constants.IdPrefixUser, idgenerator.WithInstanceId(constants.IdInstanceUser))
+	IdGeneratorNotification = idgenerator.New(NfPrefix, idgenerator.WithInstanceId(constants.IdInstanceUser))
 )
 
 var (
