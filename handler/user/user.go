@@ -177,8 +177,5 @@ func DeleteUserByIds(tx *gorm.DB, userIds []string) (err error) {
 func ExistsUsername(tx *gorm.DB, name string) bool {
 	var count int64
 	tx.Table(tableNameUser).Where("name = ?", name).Count(&count)
-	if count > 0 {
-		return true
-	}
-	return false
+	return count > 0
 }

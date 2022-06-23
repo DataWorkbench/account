@@ -8,7 +8,7 @@ require (
 	github.com/DataWorkbench/gproto v0.0.0-20220622054643-81ccbf2d5f72
 	github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd
 	github.com/a8m/envsubst v1.3.0
-	github.com/go-ldap/ldap/v3 v3.4.3 // indirect
+	github.com/go-ldap/ldap/v3 v3.4.3
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0

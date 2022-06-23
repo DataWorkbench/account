@@ -1,12 +1,13 @@
 package user
 
 import (
+	"math"
+
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
-	"math"
 )
 
 func ListNotifications(tx *gorm.DB, input *pbrequest.ListNotifications) (output *pbresponse.ListNotifications, err error) {
@@ -91,8 +92,5 @@ func UpdateNotification(tx *gorm.DB, id, name, description, email string) (err e
 func CheckUpdateNotificationConflict(tx *gorm.DB, id, name, email string) bool {
 	var count int64
 	tx.Table(tableNameNotification).Where("id <> ? and (name = ? or email = ?)", id, name, email).Count(&count)
-	if count > 0 {
-		return true
-	}
-	return false
+	return count > 0
 }
