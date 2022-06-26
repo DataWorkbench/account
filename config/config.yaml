@@ -69,10 +69,11 @@ iaas:
 source: "qingcloud"
 
 ldap:
-  url: ldap://139.198.155.59:389
-  managerDN: cn=admin,dc=nodomain
-  managerPassword: secret
-  userSearchBase: dc=nodomain
-  loginAttribute: uid
-  mailAttribute: mail
+  enabled: false
+  url: "ldap://139.198.155.59:389"
+  managerDN: "cn=admin,dc=nodomain"
+  managerPassword: "secret"
+  userSearchBase: "dc=nodomain"
+  loginAttribute: "uid"
+  mailAttribute: "mail"
   insecureSkipVerify: true

@@ -44,6 +44,7 @@ type Config struct {
 }
 
 type LdapConfig struct {
+	Enable               bool   `yaml:"enable"`
 	Url                  string `yaml:"url"`
 	ReadTimeout          int    `yaml:"readTimeout"`
 	StartTLS             bool   `yaml:"startTLS"`
