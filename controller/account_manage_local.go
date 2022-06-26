@@ -21,7 +21,12 @@ type AccountManagerLocal struct {
 }
 
 func (x *AccountManagerLocal) ListUsers(ctx context.Context, req *pbrequest.ListUsers) (*pbresponse.ListUsers, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	users, err := user.ListUsers(tx, req)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 func (x *AccountManagerLocal) DescribeUser(ctx context.Context, req *pbrequest.DescribeUser) (*pbresponse.DescribeUser, error) {
 	tx := options.DBConn.WithContext(ctx)
@@ -46,10 +51,15 @@ func (x *AccountManagerLocal) CreateUser(ctx context.Context, req *pbrequest.Cre
 		}
 		return nil
 	})
-	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+	return nil, nil
 }
 func (x *AccountManagerLocal) UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	err := user.UpdateUser(tx, req.UserId, req.Email)
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, nil
 }
 func (x *AccountManagerLocal) DeleteUsers(ctx context.Context, req *pbrequest.DeleteUsers) (*pbmodel.EmptyStruct, error) {
 	err := gormwrap.ExecuteFuncWithTxn(ctx, options.DBConn, func(tx *gorm.DB) error {
@@ -64,7 +74,7 @@ func (x *AccountManagerLocal) DeleteUsers(ctx context.Context, req *pbrequest.De
 	if err != nil {
 		return nil, err
 	}
-	return options.EmptyRPCReply, nil
+	return nil, nil
 }
 
 // TODO
@@ -107,8 +117,12 @@ func (x *AccountManagerLocal) CheckSession(ctx context.Context, req *pbrequest.C
 	return reply, nil
 }
 func (x *AccountManagerLocal) ListNotifications(ctx context.Context, req *pbrequest.ListNotifications) (*pbresponse.ListNotifications, error) {
-
-	return nil, status.Errorf(codes.Unimplemented, "method ListNotifications not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	notifications, err := user.ListNotifications(tx, req)
+	if err != nil {
+		return nil, err
+	}
+	return notifications, nil
 }
 func (x *AccountManagerLocal) DescribeNotification(ctx context.Context, req *pbrequest.DescribeNotification) (*pbresponse.DescribeNotification, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeNotification not implemented")
@@ -129,8 +143,18 @@ func (x *AccountManagerLocal) CreateNotification(ctx context.Context, req *pbreq
 	return reply, nil
 }
 func (x *AccountManagerLocal) UpdateNotification(ctx context.Context, req *pbrequest.UpdateNotification) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateNotification not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	err := user.UpdateNotification(tx, req.NfId, req.Name, req.Description, req.Email)
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, nil
 }
 func (x *AccountManagerLocal) DeleteNotifications(ctx context.Context, req *pbrequest.DeleteNotifications) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteNotification not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	err := user.DeleteNotifications(tx, req.NfIds)
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, nil
 }
