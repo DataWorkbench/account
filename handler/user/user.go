@@ -56,7 +56,7 @@ func ListUsers(tx *gorm.DB, input *pbrequest.ListUsers) (output *pbresponse.List
 func CreateUser(tx *gorm.DB, userId, name, password, email string) (err error) {
 	// Check user name is conflict
 	var x string
-	err = tx.Table(tableNameUser).Select("id").Clauses(clause.Where{Exprs: []clause.Expression{
+	err = tx.Table(tableNameUser).Select("user_id").Clauses(clause.Where{Exprs: []clause.Expression{
 		clause.Eq{Column: "name", Value: name},
 		clause.Neq{Column: "status", Value: pbmodel.User_deleted.Number()},
 	}}).Take(&x).Error
@@ -172,6 +172,14 @@ func DeleteUserByIds(tx *gorm.DB, userIds []string) (err error) {
 		return
 	}
 	return
+}
+
+func UpdateUser(tx *gorm.DB, userid, email string) error {
+	update := tx.Table(tableNameUser).Where("user_id = ?", userid).Update("email", email)
+	if update.Error != nil {
+		return update.Error
+	}
+	return nil
 }
 
 func ExistsUsername(tx *gorm.DB, name string) bool {
