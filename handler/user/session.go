@@ -3,12 +3,12 @@ package user
 import (
 	"context"
 	"encoding/json"
-
 	"github.com/DataWorkbench/account/handler/user/internal/secret"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/common/rediswrap"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"gorm.io/gorm"
+	"time"
 )
 
 type sessionCache struct {
@@ -46,7 +46,7 @@ func CreateSession(ctx context.Context, tx *gorm.DB, rdb rediswrap.Client, userN
 	if err != nil {
 		return
 	}
-	_, err = rdb.SetNX(ctx, sessionId, jsonString, 60*60*24).Result()
+	_, err = rdb.SetNX(ctx, sessionId, jsonString, time.Second*60*60*24).Result()
 	if err != nil {
 		return
 	}
