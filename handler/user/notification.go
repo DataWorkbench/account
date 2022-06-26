@@ -1,43 +1,46 @@
 package user
 
 import (
-	"math"
-
+	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/qerror"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func ListNotifications(tx *gorm.DB, input *pbrequest.ListNotifications) (output *pbresponse.ListNotifications, err error) {
-	var count int64
-	var notifications []*pbmodel.Notification
-	offset := input.Offset
-	limit := input.Limit
-	userid := input.UserId
-	if offset <= 0 {
-		offset = 1
+	var exprs []clause.Expression
+	if input.UserId != "" {
+		exprs = append(exprs, clause.Eq{Column: "owner", Value: input.UserId})
 	}
-	if limit <= 0 {
-		limit = 10
+	if len(input.NfIds) != 0 {
+		exprs = append(exprs, gormwrap.BuildConditionClauseInWithString("id", input.NfIds))
 	}
-	res := tx.Table(tableNameNotification).Where("owner = ?", userid).Count(&count).Offset(int((offset - 1) * limit)).Limit(int(limit)).Find(&notifications)
-	err = res.Error
+	var infos []*pbmodel.Notification
+	var total int64
+
+	err = tx.Table(tableNameNotification).Select("*").Clauses(clause.Where{Exprs: exprs}).
+		Limit(int(input.Limit)).Offset(int(input.Offset)).
+		Scan(&infos).Error
 	if err != nil {
 		return nil, err
 	}
-	totalPage := math.Ceil(float64(count) / float64(limit))
-	reply := &pbresponse.ListNotifications{
-		Infos:   nil,
-		Total:   count,
-		HasMore: false,
+	if input.Offset == 0 && len(infos) < int(input.Limit) {
+		total = int64(len(infos))
+	} else {
+		err = tx.Table(tableNameNotification).Select("count(id)").Clauses(clause.Where{Exprs: exprs}).Scan(&total).Error
+		if err != nil {
+			return nil, err
+		}
 	}
-	reply.Infos = notifications
-	if int64(offset) < int64(totalPage) {
-		reply.HasMore = true
+	output = &pbresponse.ListNotifications{
+		Infos:   infos,
+		Total:   total,
+		HasMore: len(infos) >= int(input.Limit),
 	}
-	return reply, nil
+	return output, nil
 }
 
 func CreateNotification(tx *gorm.DB, owner, id, name, description, email string) (err error) {
