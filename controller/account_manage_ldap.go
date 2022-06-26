@@ -106,17 +106,44 @@ func (x *AccountManagerLdap) CheckSession(ctx context.Context, req *pbrequest.Ch
 	return reply, nil
 }
 func (x *AccountManagerLdap) ListNotifications(ctx context.Context, req *pbrequest.ListNotifications) (*pbresponse.ListNotifications, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListNotifications not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	notifications, err := user.ListNotifications(tx, req)
+	if err != nil {
+		return nil, err
+	}
+	return notifications, nil
 }
 func (x *AccountManagerLdap) DescribeNotification(ctx context.Context, req *pbrequest.DescribeNotification) (*pbresponse.DescribeNotification, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeNotification not implemented")
 }
 func (x *AccountManagerLdap) CreateNotification(ctx context.Context, req *pbrequest.CreateNotification) (*pbresponse.CreateNotification, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateNotification not implemented")
+	take, err := options.IdGeneratorNotification.Take()
+	if err != nil {
+		return nil, err
+	}
+	tx := options.DBConn.WithContext(ctx)
+	err = user.CreateNotification(tx, req.UserId, take, req.Name, req.Description, req.Email)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.CreateNotification{
+		Id: take,
+	}
+	return reply, nil
 }
 func (x *AccountManagerLdap) UpdateNotification(ctx context.Context, req *pbrequest.UpdateNotification) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateNotification not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	err := user.UpdateNotification(tx, req.NfId, req.Name, req.Description, req.Email)
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, nil
 }
 func (x *AccountManagerLdap) DeleteNotifications(ctx context.Context, req *pbrequest.DeleteNotifications) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteNotifications not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	err := user.DeleteNotifications(tx, req.NfIds)
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, nil
 }
