@@ -2,8 +2,6 @@ package options
 
 import (
 	"context"
-	"io"
-
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/gormwrap"
@@ -16,6 +14,7 @@ import (
 	"github.com/DataWorkbench/glog"
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"gorm.io/gorm"
+	"io"
 )
 
 const (
@@ -25,7 +24,7 @@ const (
 
 var EmptyRPCReply = &pbmodel.EmptyStruct{}
 
-const NfPrefix = "nf"
+const NfPrefix = "nf-"
 
 var (
 	IdGeneratorUser         = idgenerator.New(constants.IdPrefixUser, idgenerator.WithInstanceId(constants.IdInstanceUser))
