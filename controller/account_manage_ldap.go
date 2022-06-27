@@ -41,20 +41,22 @@ func (x *AccountManagerLdap) UpdateUser(ctx context.Context, req *pbrequest.Upda
 	return &pbmodel.EmptyStruct{}, nil
 }
 func (x *AccountManagerLdap) ChangeUserPassword(ctx context.Context, req *pbrequest.ChangeUserPassword) (*pbmodel.EmptyStruct, error) {
-	tx := options.DBConn.WithContext(ctx)
-	err := user.ChangePassword(tx, req.UserId, req.OldPassword, req.NewPassword)
-	if err != nil {
-		return nil, err
-	}
-	return &pbmodel.EmptyStruct{}, err
+	//tx := options.DBConn.WithContext(ctx)
+	//err := user.ChangePassword(tx, req.UserId, req.OldPassword, req.NewPassword)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return &pbmodel.EmptyStruct{}, err
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (x *AccountManagerLdap) ResetUserPassword(ctx context.Context, req *pbrequest.ResetUserPassword) (*pbmodel.EmptyStruct, error) {
-	tx := options.DBConn.WithContext(ctx)
-	err := user.ResetPassword(tx, req.UserId, req.NewPassword)
-	if err != nil {
-		return nil, err
-	}
-	return &pbmodel.EmptyStruct{}, err
+	//tx := options.DBConn.WithContext(ctx)
+	//err := user.ResetPassword(tx, req.UserId, req.NewPassword)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return &pbmodel.EmptyStruct{}, err
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (x *AccountManagerLdap) ListAccessKeys(ctx context.Context, req *pbrequest.ListAccessKeys) (*pbresponse.ListAccessKeys, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAccessKeys not implemented")
