@@ -80,20 +80,32 @@ func (x *AccountManagerLocal) DeleteUsers(ctx context.Context, req *pbrequest.De
 	return &pbmodel.EmptyStruct{}, nil
 }
 
-// TODO
 func (x *AccountManagerLocal) ChangeUserPassword(ctx context.Context, req *pbrequest.ChangeUserPassword) (*pbmodel.EmptyStruct, error) {
 	tx := options.DBConn.WithContext(ctx)
 	err := user.ChangePassword(tx, req.UserId, req.OldPassword, req.NewPassword)
 	if err != nil {
-		return nil, err
+		return &pbmodel.EmptyStruct{}, err
 	}
 	return &pbmodel.EmptyStruct{}, err
 }
-func (x *AccountManagerLocal) ResetUserPassword(context.Context, *pbrequest.ResetUserPassword) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResetUserPassword not implemented")
+func (x *AccountManagerLocal) ResetUserPassword(ctx context.Context, req *pbrequest.ResetUserPassword) (*pbmodel.EmptyStruct, error) {
+	tx := options.DBConn.WithContext(ctx)
+	err := user.ResetPassword(tx, req.UserId, req.NewPassword)
+	if err != nil {
+		return &pbmodel.EmptyStruct{}, err
+	}
+	return &pbmodel.EmptyStruct{}, nil
 }
 func (x *AccountManagerLocal) DescribeAccessKey(ctx context.Context, req *pbrequest.DescribeAccessKey) (*pbresponse.DescribeAccessKey, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DescribeAccessKey not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	key, err := user.DescriptAccessKey(tx, req.AccessKeyId)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.DescribeAccessKey{
+		KeySet: key,
+	}
+	return reply, nil
 }
 func (x *AccountManagerLocal) CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbresponse.CreateSession, error) {
 	tx := options.DBConn.WithContext(ctx)

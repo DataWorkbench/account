@@ -1,6 +1,7 @@
 package user
 
 import (
+	"strings"
 	"time"
 
 	secret2 "github.com/DataWorkbench/account/handler/user/internal/secret"
@@ -71,6 +72,12 @@ func CreateUser(tx *gorm.DB, userId, name, password, email string) (err error) {
 		return
 	}
 
+	length := strings.Count(password, "")
+	if length > 20 && length < 8 {
+		err = qerror.InvalidParamsLength.Format(8, 20)
+		return
+	}
+
 	password, err = secret2.EncodePassword(password)
 	if err != nil {
 		return
@@ -125,34 +132,54 @@ func DescribeUserByName(tx *gorm.DB, userName string) (info *pbmodel.User, err e
 }
 
 func ChangePassword(tx *gorm.DB, userId, oldPassWord, newPassWord string) (err error) {
+	length := strings.Count(newPassWord, "")
+	if length > 20 && length < 8 {
+		err = qerror.InvalidParamsLength.Format(8, 20)
+		return
+	}
 	user := &pbmodel.User{}
-	res := tx.Where("user_id = ", userId).Find(user)
+	res := tx.Table(tableNameUser).Where("user_id = ?", userId).Find(&user)
 	if res.Error != nil {
 		return res.Error
 	}
 	if res.RowsAffected == 0 {
-		return qerror.ResourceNotExists
+		return qerror.ResourceNotExists.Format(userId)
 	}
 	verify := secret2.CheckPassword(oldPassWord, user.Password)
 	if !verify {
-		return qerror.InvalidParams
+		return qerror.UserNameOrPasswordError
 	}
 	encodePassword, err := secret2.EncodePassword(newPassWord)
 	if err != nil {
 		return err
 	}
-	updates := tx.Model(user).Update("password", encodePassword)
+	updates := tx.Table(tableNameUser).Where("user_id = ?", userId).Update("password", encodePassword)
 	if updates.Error != nil {
-		return updates.Error
-	}
-	if updates.RowsAffected == 0 {
 		return updates.Error
 	}
 	return nil
 }
 
-func RestPassword(tx *gorm.DB, userId, newPassWord string) (err error) {
-	panic("unrealized")
+func ResetPassword(tx *gorm.DB, userId, newPassWord string) (err error) {
+	length := strings.Count(newPassWord, "")
+	if length > 20 && length < 8 {
+		err = qerror.InvalidParamsLength.Format(8, 20)
+		return
+	}
+	var count int64
+	tx.Table(tableNameUser).Where("user_id = ?", userId).Count(&count)
+	if err != nil {
+		return
+	}
+	if count == 0 {
+		return qerror.ResourceNotExists
+	}
+	encodePassword, err := secret2.EncodePassword(newPassWord)
+	if err != nil {
+		return err
+	}
+	err = tx.Table(tableNameUser).Where("user_id = ?", userId).Update("password", encodePassword).Error
+	return
 }
 
 func DeleteUserByIds(tx *gorm.DB, userIds []string) (err error) {

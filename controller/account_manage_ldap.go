@@ -33,13 +33,28 @@ func (x *AccountManagerLdap) CreateUser(ctx context.Context, req *pbrequest.Crea
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (x *AccountManagerLdap) UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	err := user.UpdateUser(tx, req.UserId, req.Email)
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, nil
 }
 func (x *AccountManagerLdap) ChangeUserPassword(ctx context.Context, req *pbrequest.ChangeUserPassword) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChangeUserPassword not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	err := user.ChangePassword(tx, req.UserId, req.OldPassword, req.NewPassword)
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, err
 }
 func (x *AccountManagerLdap) ResetUserPassword(ctx context.Context, req *pbrequest.ResetUserPassword) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResetUserPassword not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	err := user.ResetPassword(tx, req.UserId, req.NewPassword)
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, err
 }
 func (x *AccountManagerLdap) ListAccessKeys(ctx context.Context, req *pbrequest.ListAccessKeys) (*pbresponse.ListAccessKeys, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAccessKeys not implemented")
@@ -59,7 +74,6 @@ func (x *AccountManagerLdap) UpdatedAccessKey(ctx context.Context, req *pbreques
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatedAccessKey not implemented")
 }
 func (x *AccountManagerLdap) CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbresponse.CreateSession, error) {
-	// TODO
 	tx := options.DBConn.WithContext(ctx)
 	userName := req.UserName
 	password := req.Password
