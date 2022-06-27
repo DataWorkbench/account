@@ -39,6 +39,9 @@ func (x *AccountManagerLocal) DescribeUser(ctx context.Context, req *pbrequest.D
 }
 func (x *AccountManagerLocal) CreateUser(ctx context.Context, req *pbrequest.CreateUser) (*pbresponse.CreateUser, error) {
 	userId, err := options.IdGeneratorUser.Take()
+	p := &pbresponse.CreateUser{
+		Id: userId,
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +54,7 @@ func (x *AccountManagerLocal) CreateUser(ctx context.Context, req *pbrequest.Cre
 		}
 		return nil
 	})
-	return nil, nil
+	return p, nil
 }
 func (x *AccountManagerLocal) UpdateUser(ctx context.Context, req *pbrequest.UpdateUser) (*pbmodel.EmptyStruct, error) {
 	tx := options.DBConn.WithContext(ctx)
@@ -74,7 +77,7 @@ func (x *AccountManagerLocal) DeleteUsers(ctx context.Context, req *pbrequest.De
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &pbmodel.EmptyStruct{}, nil
 }
 
 // TODO
@@ -84,7 +87,7 @@ func (x *AccountManagerLocal) ChangeUserPassword(ctx context.Context, req *pbreq
 	if err != nil {
 		return nil, err
 	}
-	return nil, err
+	return &pbmodel.EmptyStruct{}, err
 }
 func (x *AccountManagerLocal) ResetUserPassword(context.Context, *pbrequest.ResetUserPassword) (*pbmodel.EmptyStruct, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetUserPassword not implemented")
