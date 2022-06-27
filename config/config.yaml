@@ -69,7 +69,7 @@ iaas:
 source: "qingcloud"
 
 ldap:
-  enabled: false
+  enable: false
   url: "ldap://139.198.155.59:389"
   managerDN: "cn=admin,dc=nodomain"
   managerPassword: "secret"

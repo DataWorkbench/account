@@ -3,6 +3,7 @@ package options
 import (
 	"context"
 	"github.com/DataWorkbench/account/config"
+	"github.com/DataWorkbench/account/handler/user"
 	"github.com/DataWorkbench/common/constants"
 	"github.com/DataWorkbench/common/gormwrap"
 	"github.com/DataWorkbench/common/grpcwrap"
@@ -85,6 +86,11 @@ func Init() (err error) {
 	}
 
 	IaaSClient = iaas.New(ctx, cfg.Qingcloud)
+
+	// init ldap
+	if cfg.Ldap.Enable {
+		user.InitLdap(cfg.Ldap)
+	}
 
 	return
 }

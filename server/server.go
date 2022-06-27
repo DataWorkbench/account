@@ -44,8 +44,11 @@ func Start() (err error) {
 		return
 	}
 
-	rpcServer.RegisterService(&pbsvcaccount.AccountManage_ServiceDesc, &controller.AccountManagerLocal{})
-
+	if cfg.Ldap.Enable {
+		rpcServer.RegisterService(&pbsvcaccount.AccountManage_ServiceDesc, &controller.AccountManagerLdap{})
+	} else {
+		rpcServer.RegisterService(&pbsvcaccount.AccountManage_ServiceDesc, &controller.AccountManagerLocal{})
+	}
 	switch cfg.Source {
 	case options.QingcloudSource:
 		rpcServer.RegisterService(&pbsvcaccount.AccountProxy_ServiceDesc, &controller.AccountProxyIaaS{})
