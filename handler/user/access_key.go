@@ -108,3 +108,12 @@ func deleteAccessKeyByExpr(tx *gorm.DB, expr clause.Expression) (err error) {
 	}
 	return
 }
+
+func DescriptAccessKey(tx *gorm.DB, accesskeyId string) (key *pbmodel.AccessKey, err error) {
+	key = &pbmodel.AccessKey{}
+	err = tx.Table(tableNameAccessKey).Where("access_key_id = ?", accesskeyId).Find(key).Error
+	if err != nil {
+		return
+	}
+	return
+}

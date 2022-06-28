@@ -21,13 +21,36 @@ type AccountManagerLdap struct {
 }
 
 func (x *AccountManagerLdap) ListUsers(ctx context.Context, req *pbrequest.ListUsers) (*pbresponse.ListUsers, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	users, err := user.ListUsers(tx, req)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 func (x *AccountManagerLdap) DeleteUsers(ctx context.Context, req *pbrequest.DeleteUsers) (*pbmodel.EmptyStruct, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteUsers not implemented")
+	err := gormwrap.ExecuteFuncWithTxn(ctx, options.DBConn, func(tx *gorm.DB) error {
+		if xErr := user.DeleteUserByIds(tx, req.UserIds); xErr != nil {
+			return xErr
+		}
+		if xErr := user.DeleteAccessKeysByUserIds(tx, req.UserIds); xErr != nil {
+			return xErr
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &pbmodel.EmptyStruct{}, nil
 }
 func (x *AccountManagerLdap) DescribeUser(ctx context.Context, req *pbrequest.DescribeUser) (*pbresponse.DescribeUser, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DescribeUser not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	info, err := user.DescribeUserById(tx, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.DescribeUser{UserSet: info}
+	return reply, nil
 }
 func (x *AccountManagerLdap) CreateUser(ctx context.Context, req *pbrequest.CreateUser) (*pbresponse.CreateUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
