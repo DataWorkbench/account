@@ -37,7 +37,6 @@ CREATE TABLE `notification` (
     `email` varchar(64) NOT NULL,
     `created` bigint(20) unsigned NOT NULL,
     `updated` bigint(20) unsigned NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `notification_UN` (`name`,`email`)
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
