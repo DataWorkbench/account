@@ -196,3 +196,32 @@ func ExistsUsername(tx *gorm.DB, name string) bool {
 	tx.Table(tableNameUser).Where("name = ?", name).Count(&count)
 	return count > 0
 }
+
+func CreateAdminUser(tx *gorm.DB, userId, username, password, email string) error {
+	var err error
+	ok := ExistsUsername(tx, username)
+	encodePassword, err := secret2.EncodePassword(password)
+	if !ok {
+		err = tx.Transaction(func(tx *gorm.DB) error {
+			err = tx.Table(tableNameUser).Create(&pbmodel.User{
+				UserId:   userId,
+				Name:     username,
+				Email:    email,
+				Role:     pbmodel.User_Admin,
+				Status:   pbmodel.User_active,
+				Password: encodePassword,
+				Created:  time.Now().Unix(),
+				Updated:  time.Now().Unix(),
+			}).Error
+			if err != nil {
+				return err
+			}
+			err = InitAccessKey(tx, userId)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	return err
+}
