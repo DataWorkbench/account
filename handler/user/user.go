@@ -1,7 +1,6 @@
 package user
 
 import (
-	"strings"
 	"time"
 
 	secret2 "github.com/DataWorkbench/account/handler/user/internal/secret"
@@ -71,13 +70,6 @@ func CreateUser(tx *gorm.DB, userId, name, password, email string) (err error) {
 		err = qerror.ResourceAlreadyExists.Format(name)
 		return
 	}
-
-	length := strings.Count(password, "")
-	if length > 20 && length < 8 {
-		err = qerror.InvalidParamsLength.Format(8, 20)
-		return
-	}
-
 	password, err = secret2.EncodePassword(password)
 	if err != nil {
 		return
@@ -132,11 +124,6 @@ func DescribeUserByName(tx *gorm.DB, userName string) (info *pbmodel.User, err e
 }
 
 func ChangePassword(tx *gorm.DB, userId, oldPassWord, newPassWord string) (err error) {
-	length := strings.Count(newPassWord, "")
-	if length > 20 && length < 8 {
-		err = qerror.InvalidParamsLength.Format(8, 20)
-		return
-	}
 	user := &pbmodel.User{}
 	res := tx.Table(tableNameUser).Where("user_id = ?", userId).Find(&user)
 	if res.Error != nil {
@@ -161,11 +148,6 @@ func ChangePassword(tx *gorm.DB, userId, oldPassWord, newPassWord string) (err e
 }
 
 func ResetPassword(tx *gorm.DB, userId, newPassWord string) (err error) {
-	length := strings.Count(newPassWord, "")
-	if length > 20 && length < 8 {
-		err = qerror.InvalidParamsLength.Format(8, 20)
-		return
-	}
 	var count int64
 	tx.Table(tableNameUser).Where("user_id = ?", userId).Count(&count)
 	if err != nil {

@@ -30,7 +30,7 @@ func ListNotifications(tx *gorm.DB, input *pbrequest.ListNotifications) (output 
 	if input.Offset == 0 && len(infos) < int(input.Limit) {
 		total = int64(len(infos))
 	} else {
-		err = tx.Table(tableNameNotification).Select("count(id)").Clauses(clause.Where{Exprs: exprs}).Scan(&total).Error
+		err = tx.Table(tableNameNotification).Select("count(id)").Clauses(clause.Where{Exprs: exprs}).Count(&total).Error
 		if err != nil {
 			return nil, err
 		}
@@ -63,6 +63,17 @@ func CreateNotification(tx *gorm.DB, owner, id, name, description, email string)
 		return err
 	}
 	return nil
+}
+
+func DescribeNotification(tx *gorm.DB, nfId string) (resp *pbresponse.DescribeNotification, err error) {
+	notification := pbmodel.Notification{}
+	find := tx.Table(tableNameNotification).Where("id = ?", nfId).Find(&notification)
+	err = find.Error
+	if err != nil {
+		return nil, err
+	}
+	resp.NfSet = &notification
+	return resp, nil
 }
 
 func DeleteNotifications(tx *gorm.DB, nfIds []string) (err error) {

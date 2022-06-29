@@ -10,8 +10,6 @@ import (
 	"github.com/DataWorkbench/gproto/xgo/types/pbmodel"
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 )
 
@@ -140,7 +138,12 @@ func (x *AccountManagerLocal) ListNotifications(ctx context.Context, req *pbrequ
 	return notifications, nil
 }
 func (x *AccountManagerLocal) DescribeNotification(ctx context.Context, req *pbrequest.DescribeNotification) (*pbresponse.DescribeNotification, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DescribeNotification not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	notification, err := user.DescribeNotification(tx, req.NfId)
+	if err != nil {
+		return nil, err
+	}
+	return notification, nil
 }
 func (x *AccountManagerLocal) CreateNotification(ctx context.Context, req *pbrequest.CreateNotification) (*pbresponse.CreateNotification, error) {
 	take, err := options.IdGeneratorNotification.Take()

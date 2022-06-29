@@ -38,9 +38,9 @@ func CreateAccessKey(tx *gorm.DB, keySet *pbmodel.AccessKey) (err error) {
 	panic("unrealized")
 }
 
-func ListAccessKeys(tx *gorm.DB) {
-	panic("unrealized")
-}
+//func ListAccessKeys(tx *gorm.DB) {
+//	panic("unrealized")
+//}
 
 func DescribeAccessKeyByKeyId(tx *gorm.DB, accessKeyId string) (info *pbmodel.AccessKey, err error) {
 	info = new(pbmodel.AccessKey)
@@ -112,6 +112,21 @@ func deleteAccessKeyByExpr(tx *gorm.DB, expr clause.Expression) (err error) {
 func DescriptAccessKey(tx *gorm.DB, accesskeyId string) (key *pbmodel.AccessKey, err error) {
 	key = &pbmodel.AccessKey{}
 	err = tx.Table(tableNameAccessKey).Where("access_key_id = ?", accesskeyId).Find(key).Error
+	if err != nil {
+		return
+	}
+	return
+}
+
+func ListAccessKeys(tx *gorm.DB, limit, offset int32) (keys []*pbmodel.AccessKey, err error) {
+	keys = make([]*pbmodel.AccessKey, 0)
+	if limit < 0 || offset < 0 {
+		limit = 10
+		offset = 0
+	}
+	err = tx.Table(tableNameAccessKey).Select("*").Clauses(clause.Where{Exprs: []clause.Expression{
+		clause.Neq{Column: "status", Value: pbmodel.AccessKey_deleted.Number()},
+	}}).Limit(int(limit)).Offset(int(offset)).Find(&keys).Error
 	if err != nil {
 		return
 	}

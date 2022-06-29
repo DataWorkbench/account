@@ -153,7 +153,12 @@ func (x *AccountManagerLdap) ListNotifications(ctx context.Context, req *pbreque
 	return notifications, nil
 }
 func (x *AccountManagerLdap) DescribeNotification(ctx context.Context, req *pbrequest.DescribeNotification) (*pbresponse.DescribeNotification, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DescribeNotification not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	resp, err := user.DescribeNotification(tx, req.NfId)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 func (x *AccountManagerLdap) CreateNotification(ctx context.Context, req *pbrequest.CreateNotification) (*pbresponse.CreateNotification, error) {
 	take, err := options.IdGeneratorNotification.Take()
