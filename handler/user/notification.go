@@ -44,12 +44,8 @@ func ListNotifications(tx *gorm.DB, input *pbrequest.ListNotifications) (output 
 }
 
 func CreateNotification(tx *gorm.DB, owner, id, name, description, email string) (err error) {
-	notification := &pbmodel.Notification{}
-	err = tx.Table(tableNameNotification).Where("name = ? OR email = ?", name, email).Find(&pbmodel.Notification{}).Error
-	if err != nil {
-		return err
-	}
-	if notification.Name != "" || notification.Email != "" {
+	conflict := CheckUpdateNotificationConflict(tx, owner, email)
+	if conflict {
 		return qerror.ResourceAlreadyExists
 	}
 	err = tx.Table(tableNameNotification).Create(&pbmodel.Notification{
@@ -77,6 +73,10 @@ func DescribeNotification(tx *gorm.DB, nfId string) (resp *pbresponse.DescribeNo
 }
 
 func DeleteNotifications(tx *gorm.DB, nfIds []string) (err error) {
+	var exprs []clause.Expression
+	if len(nfIds) != 0 {
+		exprs = append(exprs, gormwrap.BuildConditionClauseInWithString("id", nfIds))
+	}
 	for _, id := range nfIds {
 		de := tx.Table(tableNameNotification).Where("id = ?", id).Delete(&pbmodel.Notification{})
 		if de.Error != nil {
@@ -86,25 +86,25 @@ func DeleteNotifications(tx *gorm.DB, nfIds []string) (err error) {
 	return nil
 }
 
-func UpdateNotification(tx *gorm.DB, id, name, description, email string) (err error) {
-	conflict := CheckUpdateNotificationConflict(tx, id, name, email)
+func UpdateNotification(tx *gorm.DB, owner, name, description, email string) (err error) {
+	conflict := CheckUpdateNotificationConflict(tx, owner, email)
 	if conflict {
 		return qerror.ResourceAlreadyExists
 	}
-	updates := tx.Table(tableNameNotification).Where("id = ?", id).Updates(&pbmodel.Notification{
-		Name:        name,
-		Description: description,
-		Email:       email,
-	})
-	err = updates.Error
+	err = tx.Table(tableNameNotification).Clauses(clause.Where{Exprs: []clause.Expression{
+		clause.Eq{Column: "owner", Value: owner},
+		clause.Eq{Column: "email", Value: email},
+		clause.Eq{Column: "name", Value: name},
+		clause.Eq{Column: "description", Value: description},
+	}}).Updates(&pbmodel.Notification{}).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func CheckUpdateNotificationConflict(tx *gorm.DB, id, name, email string) bool {
+func CheckUpdateNotificationConflict(tx *gorm.DB, owner, email string) bool {
 	var count int64
-	tx.Table(tableNameNotification).Where("id <> ? and (name = ? or email = ?)", id, name, email).Count(&count)
+	tx.Table(tableNameNotification).Where("owner = ? AND email = ?", owner, email).Count(&count)
 	return count > 0
 }
