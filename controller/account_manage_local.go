@@ -2,6 +2,8 @@ package controller
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 
 	"github.com/DataWorkbench/account/handler/user"
 	"github.com/DataWorkbench/account/options"
@@ -175,4 +177,17 @@ func (x *AccountManagerLocal) DeleteNotifications(ctx context.Context, req *pbre
 		return nil, err
 	}
 	return &pbmodel.EmptyStruct{}, nil
+}
+
+func CreateAdminUser(ctx context.Context) error {
+	tx := options.DBConn.WithContext(ctx)
+	adminId, err := options.IdGeneratorUser.Take()
+	if err != nil {
+		return err
+	}
+	hash := sha256.New()
+	hash.Write([]byte("zhu88jie"))
+	password := hex.EncodeToString(hash.Sum(nil))
+	err = user.CreateAdminUser(tx, adminId, "admin", password, "account@yunify.com")
+	return err
 }
