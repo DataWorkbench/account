@@ -16,6 +16,6 @@ require (
 	golang.org/x/crypto v0.0.0-20220331220935-ae2d96664a29
 	google.golang.org/grpc v1.46.2
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
-	gorm.io/driver/mysql v1.3.4
+	gorm.io/driver/mysql v1.3.4 // indirect
 	gorm.io/gorm v1.23.4
 )
