@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"github.com/DataWorkbench/account/config"
 	"os"
 	"os/signal"
 	"syscall"
@@ -57,13 +56,6 @@ func Start() (err error) {
 		rpcServer.RegisterService(&pbsvcaccount.AccountProxy_ServiceDesc, &controller.AccountProxyLocal{})
 	default:
 		panic("unsupported source")
-	}
-
-	// create admin user
-	if config.CreateAdmin {
-		if err = controller.CreateAdminUser(ctx); err != nil {
-			return
-		}
 	}
 
 	// handle signal

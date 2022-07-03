@@ -25,7 +25,6 @@ const (
 )
 
 var FilePath string
-var CreateAdmin bool
 
 const (
 	envPrefix = "ACCOUNT"

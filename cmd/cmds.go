@@ -66,8 +66,4 @@ func init() {
 	start.Flags().StringVarP(
 		&config.FilePath, "config", "c", "", "path of config file",
 	)
-
-	start.Flags().BoolVarP(
-		&config.CreateAdmin, "create", "a", false, "whether to create the admin user",
-	)
 }

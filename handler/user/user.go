@@ -183,6 +183,24 @@ func DeleteUserByIds(tx *gorm.DB, userIds []string) (err error) {
 	return
 }
 
+func DeleteUserByNames(tx *gorm.DB, userNames string) (err error) {
+
+	err = tx.Table(tableNameUser).Clauses(clause.Where{
+		Exprs: []clause.Expression{
+			clause.Neq{Column: "status", Value: pbmodel.User_deleted.Number()},
+			clause.Eq{Column: "name", Value: userNames},
+		},
+	}).Updates(map[string]interface{}{
+		"status":  pbmodel.User_deleted.Number(),
+		"name":    gorm.Expr("concat(name,'.', user_id)"),
+		"updated": time.Now().Unix(),
+	}).Error
+	if err != nil {
+		return
+	}
+	return
+}
+
 func UpdateUser(tx *gorm.DB, userid, email string) error {
 	update := tx.Table(tableNameUser).Where("user_id = ?", userid).Update("email", email)
 	if update.Error != nil {
@@ -193,13 +211,14 @@ func UpdateUser(tx *gorm.DB, userid, email string) error {
 
 func ExistsUsername(tx *gorm.DB, name string) bool {
 	var count int64
-	tx.Table(tableNameUser).Where("name = ?", name).Count(&count)
+	tx.Table(tableNameUser).Where("name = ? and status != ?", name, pbmodel.User_deleted).Count(&count)
 	return count > 0
 }
 
 func CreateAdminUser(tx *gorm.DB, userId, username, password, email string) error {
 	var err error
 	ok := ExistsUsername(tx, username)
+
 	encodePassword, err := secret2.EncodePassword(password)
 	if !ok {
 		err = tx.Transaction(func(tx *gorm.DB) error {
