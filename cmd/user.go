@@ -112,7 +112,7 @@ var reset = &cobra.Command{
 		if len(args[0]) == 0 || len(args[1]) == 0 {
 			fmt.Println("username or password is empty")
 		}
-		err = user.ResetPassword(options.DBConn, args[0], passwordWithSHA256)
+		err = user.ResetPasswordByName(options.DBConn, args[0], passwordWithSHA256)
 		if err != nil {
 			fmt.Println(err)
 			return

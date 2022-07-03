@@ -149,7 +149,7 @@ func ChangePassword(tx *gorm.DB, userId, oldPassWord, newPassWord string) (err e
 
 func ResetPassword(tx *gorm.DB, userId, newPassWord string) (err error) {
 	var count int64
-	tx.Table(tableNameUser).Where("user_id = ?", userId).Count(&count)
+	tx.Table(tableNameUser).Where("user_id = ? AND status != ?", userId, pbmodel.User_deleted).Count(&count)
 	if err != nil {
 		return
 	}
@@ -161,6 +161,23 @@ func ResetPassword(tx *gorm.DB, userId, newPassWord string) (err error) {
 		return err
 	}
 	err = tx.Table(tableNameUser).Where("user_id = ?", userId).Update("password", encodePassword).Error
+	return
+}
+
+func ResetPasswordByName(tx *gorm.DB, userName, newPassWord string) (err error) {
+	var count int64
+	err = tx.Table(tableNameUser).Where("name = ? AND status != ?", userName, pbmodel.User_deleted).Count(&count).Error
+	if err != nil {
+		return
+	}
+	if count == 0 {
+		return qerror.ResourceNotExists
+	}
+	encodePassword, err := secret2.EncodePassword(newPassWord)
+	if err != nil {
+		return err
+	}
+	err = tx.Table(tableNameUser).Where("name = ? AND status != ?", userName, pbmodel.User_deleted).Update("password", encodePassword).Error
 	return
 }
 
