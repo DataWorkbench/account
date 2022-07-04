@@ -62,13 +62,14 @@ func CreateNotification(tx *gorm.DB, owner, id, name, description, email string)
 }
 
 func DescribeNotification(tx *gorm.DB, nfId string) (resp *pbresponse.DescribeNotification, err error) {
-	notification := pbmodel.Notification{}
-	find := tx.Table(tableNameNotification).Where("id = ?", nfId).Find(&notification)
-	err = find.Error
+	var info pbmodel.Notification
+	err = tx.Table(tableNameNotification).Where("id = ?", nfId).Scan(&info).Error
 	if err != nil {
 		return nil, err
 	}
-	resp.NfSet = &notification
+	resp = &pbresponse.DescribeNotification{
+		NfSet: &info,
+	}
 	return resp, nil
 }
 
