@@ -87,17 +87,14 @@ func DeleteNotifications(tx *gorm.DB, nfIds []string) (err error) {
 	return nil
 }
 
-func UpdateNotification(tx *gorm.DB, owner, name, description, email string) (err error) {
-	conflict := CheckUpdateNotificationConflict(tx, owner, email)
-	if conflict {
-		return qerror.ResourceAlreadyExists
-	}
+func UpdateNotification(tx *gorm.DB, nfId, name, description, email string) (err error) {
 	err = tx.Table(tableNameNotification).Clauses(clause.Where{Exprs: []clause.Expression{
-		clause.Eq{Column: "owner", Value: owner},
-		clause.Eq{Column: "email", Value: email},
-		clause.Eq{Column: "name", Value: name},
-		clause.Eq{Column: "description", Value: description},
-	}}).Updates(&pbmodel.Notification{}).Error
+		clause.Eq{Column: "id", Value: nfId},
+	}}).Updates(&pbmodel.Notification{
+		Name:        name,
+		Description: description,
+		Email:       email,
+	}).Error
 	if err != nil {
 		return err
 	}
