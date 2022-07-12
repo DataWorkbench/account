@@ -30,9 +30,14 @@ func (x *AccountProxyIaaS) ListUsersByProxy(ctx context.Context, req *pbrequest.
 	if err != nil {
 		return nil, err
 	}
+
+	infos := x.iaasUsersToUsers(output.UserSet)
+	hasMore := len(infos) >= int(req.Limit)
+
 	reply := &pbresponse.ListUsersByProxy{
-		Infos: x.iaasUsersToUsers(output.UserSet),
-		Total: int64(output.TotalCount),
+		Infos:   infos,
+		Total:   int64(output.TotalCount),
+		HasMore: hasMore,
 	}
 	return reply, nil
 }
@@ -58,9 +63,14 @@ func (x *AccountProxyIaaS) ListNotificationsByProxy(ctx context.Context, req *pb
 	if err != nil {
 		return nil, err
 	}
+
+	infos := x.iaasNotificationListsToNotifications(output.NotificationListSet)
+	hasMore := len(infos) >= int(req.Limit)
+
 	reply := &pbresponse.ListNotificationsByProxy{
-		Infos: x.iaasNotificationListsToNotifications(output.NotificationListSet),
-		Total: int64(output.TotalCount),
+		Infos:   infos,
+		Total:   int64(output.TotalCount),
+		HasMore: hasMore,
 	}
 	return reply, nil
 }

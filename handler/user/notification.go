@@ -78,6 +78,7 @@ func DeleteNotifications(tx *gorm.DB, nfIds []string) (err error) {
 	if len(nfIds) != 0 {
 		exprs = append(exprs, gormwrap.BuildConditionClauseInWithString("id", nfIds))
 	}
+	_ = exprs
 	for _, id := range nfIds {
 		de := tx.Table(tableNameNotification).Where("id = ?", id).Delete(&pbmodel.Notification{})
 		if de.Error != nil {
