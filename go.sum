@@ -82,6 +82,8 @@ github.com/DataWorkbench/common v0.0.0-20220713022544-aff62e973dec h1:rfxlbhh0AY
 github.com/DataWorkbench/common v0.0.0-20220713022544-aff62e973dec/go.mod h1:9cz437LWcu2TIaRvYQHi4uEaKHrQImJ2oy94SWmBNNk=
 github.com/DataWorkbench/common v0.0.0-20220713030028-fe25864849ea h1:z+l6A30+YBiPxJcJyW2aPZn5sYIRAWCoIx7hEAtLSXU=
 github.com/DataWorkbench/common v0.0.0-20220713030028-fe25864849ea/go.mod h1:9cz437LWcu2TIaRvYQHi4uEaKHrQImJ2oy94SWmBNNk=
+github.com/DataWorkbench/common v0.0.0-20220713060043-cd734c2a3cdc h1:EhPAI+hJMheHRw0zCLYdDw17CquDRuOgXHnGjvZNb4s=
+github.com/DataWorkbench/common v0.0.0-20220713060043-cd734c2a3cdc/go.mod h1:9cz437LWcu2TIaRvYQHi4uEaKHrQImJ2oy94SWmBNNk=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704 h1:XRck+LCallgKe6pR28PXsPadPTozMPwvrcx0GVf/b6g=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704/go.mod h1:zymxJLXn162xdWYUqIb729S3ZzRQpdTj/LwnW+xxru4=
 github.com/DataWorkbench/gproto v0.0.0-20220707020659-38ac09a0a731/go.mod h1:p0j7UkANQc+TO7L8RZIFhrI81jlZsFrXbI+eVn58AuU=
