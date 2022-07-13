@@ -59,7 +59,7 @@ func (x *AccountProxyIaaS) DescribeAccessKeyByProxy(ctx context.Context, req *pb
 
 func (x *AccountProxyIaaS) ListNotificationsByProxy(ctx context.Context, req *pbrequest.ListNotificationsByProxy) (
 	*pbresponse.ListNotificationsByProxy, error) {
-	output, err := options.IaaSClient.DescribeNotificationLists(ctx, req.UserId, int(req.Limit), int(req.Offset))
+	output, err := options.IaaSClient.DescribeNotificationLists(ctx, req.UserId, req.NfIds, int(req.Limit), int(req.Offset))
 	if err != nil {
 		return nil, err
 	}

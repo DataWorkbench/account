@@ -3,9 +3,9 @@ module github.com/DataWorkbench/account
 go 1.15
 
 require (
-	github.com/DataWorkbench/common v0.0.0-20220622054811-1766cbd1c350
+	github.com/DataWorkbench/common v0.0.0-20220713022544-aff62e973dec
 	github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704
-	github.com/DataWorkbench/gproto v0.0.0-20220625154202-7a0d9e5ae0b6
+	github.com/DataWorkbench/gproto v0.0.0-20220713022358-72e1c2fd864c
 	github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd
 	github.com/a8m/envsubst v1.3.0
 	github.com/go-ldap/ldap/v3 v3.4.3
