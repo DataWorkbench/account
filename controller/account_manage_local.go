@@ -186,7 +186,10 @@ func CreateAdminUser(ctx context.Context) error {
 		return err
 	}
 	hash := sha256.New()
-	hash.Write([]byte("zhu88jie"))
+	_, err = hash.Write([]byte("zhu88jie"))
+	if err != nil {
+		return err
+	}
 	password := hex.EncodeToString(hash.Sum(nil))
 	err = user.CreateAdminUser(tx, adminId, "admin", password, "account@yunify.com")
 	return err

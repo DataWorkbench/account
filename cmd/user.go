@@ -53,7 +53,10 @@ to quickly create a Cobra application.`,
 			return
 		}
 		hash := sha256.New()
-		hash.Write([]byte("admin"))
+		_, err = hash.Write([]byte("admin"))
+		if err != nil {
+			return
+		}
 		passwordWithSHA256 := hex.EncodeToString(hash.Sum(nil))
 		err = user.CreateAdminUser(options.DBConn, userId, "admin", passwordWithSHA256, "admin@yunify.com")
 		if err != nil {
@@ -81,7 +84,10 @@ var add = &cobra.Command{
 			return
 		}
 		hash := sha256.New()
-		hash.Write([]byte(args[1]))
+		_, err = hash.Write([]byte(args[1]))
+		if err != nil {
+			return
+		}
 		passwordWithSHA256 := hex.EncodeToString(hash.Sum(nil))
 		if len(args[0]) == 0 || len(args[1]) == 0 {
 			fmt.Println("username or password is empty")
@@ -107,7 +113,10 @@ var reset = &cobra.Command{
 		}
 		// 创建用户
 		hash := sha256.New()
-		hash.Write([]byte(args[1]))
+		_, err = hash.Write([]byte(args[1]))
+		if err != nil {
+			return
+		}
 		passwordWithSHA256 := hex.EncodeToString(hash.Sum(nil))
 		if len(args[0]) == 0 || len(args[1]) == 0 {
 			fmt.Println("username or password is empty")
