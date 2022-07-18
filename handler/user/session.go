@@ -57,6 +57,11 @@ func CheckSession(ctx context.Context, rdb rediswrap.Client, sessionId string) (
 	userSet *pbmodel.User, keySet *pbmodel.AccessKey, err error) {
 	var jsonValue []byte
 
+	exists := rdb.Exists(ctx, sessionId)
+	if exists.Val() == 0 {
+		err = qerror.ResourceNotExists
+		return
+	}
 	jsonValue, err = rdb.Get(ctx, sessionId).Bytes()
 	if err != nil {
 		return
