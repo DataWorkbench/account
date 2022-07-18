@@ -20,12 +20,13 @@ type AccountProxyIaaS struct {
 func (x *AccountProxyIaaS) ListUsersByProxy(ctx context.Context, req *pbrequest.ListUsersByProxy) (
 	*pbresponse.ListUsersByProxy, error) {
 	output, err := options.IaaSClient.DescribeUsers(ctx, &iaas.DescribeUsersInput{
-		Users:  req.UserIds,
-		Limit:  int(req.Limit),
-		Offset: int(req.Offset),
-		Status: "",
-		Email:  "",
-		Phone:  "",
+		Users:    req.UserIds,
+		Limit:    int(req.Limit),
+		Offset:   int(req.Offset),
+		Status:   "",
+		Email:    "",
+		Phone:    "",
+		RootUser: req.RootUser,
 	})
 	if err != nil {
 		return nil, err
@@ -59,7 +60,7 @@ func (x *AccountProxyIaaS) DescribeAccessKeyByProxy(ctx context.Context, req *pb
 
 func (x *AccountProxyIaaS) ListNotificationsByProxy(ctx context.Context, req *pbrequest.ListNotificationsByProxy) (
 	*pbresponse.ListNotificationsByProxy, error) {
-	output, err := options.IaaSClient.DescribeNotificationLists(ctx, req.UserId, int(req.Limit), int(req.Offset))
+	output, err := options.IaaSClient.DescribeNotificationLists(ctx, req.UserId, req.NfIds, int(req.Limit), int(req.Offset))
 	if err != nil {
 		return nil, err
 	}
