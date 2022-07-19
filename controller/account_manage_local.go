@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-
+	"encoding/json"
 	"github.com/DataWorkbench/account/handler/user"
 	"github.com/DataWorkbench/account/options"
 	"github.com/DataWorkbench/common/gormwrap"
@@ -13,7 +13,13 @@ import (
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
+	"time"
 )
+
+type sessionCache struct {
+	UserSet *pbmodel.User
+	KeySet  *pbmodel.AccessKey
+}
 
 // AccountManagerLocal implements grpc server Interface pbsvcaccount.AccountManagerLocal
 type AccountManagerLocal struct {
@@ -62,6 +68,25 @@ func (x *AccountManagerLocal) UpdateUser(ctx context.Context, req *pbrequest.Upd
 	if err != nil {
 		return nil, err
 	}
+	// 重新给sid赋值
+	rdb := options.RedisClient
+	userSet, err := user.DescribeUserById(tx, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	keySet, err := user.DescribePitrixAccessKeyByOwner(tx, userSet.UserId)
+	if err != nil {
+		return nil, err
+	}
+	sessionValue := &sessionCache{
+		UserSet: userSet,
+		KeySet:  keySet,
+	}
+	jsonString, err := json.Marshal(sessionValue)
+	if err != nil {
+		return nil, err
+	}
+	rdb.Set(ctx, req.SessionId, jsonString, time.Second*60*60*24)
 	return &pbmodel.EmptyStruct{}, nil
 }
 func (x *AccountManagerLocal) DeleteUsers(ctx context.Context, req *pbrequest.DeleteUsers) (*pbmodel.EmptyStruct, error) {
