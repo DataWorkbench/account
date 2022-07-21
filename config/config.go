@@ -37,7 +37,7 @@ type Config struct {
 	MetricsServer *metrics.Config        `json:"metrics_server" yaml:"metrics_server" env:"METRICS_SERVER"      validate:"required"`
 	MySQL         *gormwrap.MySQLConfig  `json:"mysql"          yaml:"mysql"          env:"MYSQL"               validate:"required"`
 	Redis         *rediswrap.RedisConfig `json:"redis"          yaml:"redis"          env:"REDIS"               validate:"required"`
-	Qingcloud     *iaas.Config           `json:"iaas"           yaml:"iaas"           env:"IAAS"                validate:"required"`
+	Qingcloud     *iaas.Config           `json:"iaas"           yaml:"iaas"           env:"IAAS"                validate:"-"`
 	Source        string                 `json:"source"         yaml:"source"         env:"SOURCE"              validate:"required"`
 	Tracer        *gtrace.Config         `json:"tracer"         yaml:"tracer"         env:"TRACER"              validate:"required"`
 	Ldap          *LdapConfig            `json:"ldap"           yaml:"ldap"           env:"LDAP"`
