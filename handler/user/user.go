@@ -261,3 +261,33 @@ func CreateAdminUser(tx *gorm.DB, userId, username, password, email string) erro
 	}
 	return err
 }
+
+func AddUser(tx *gorm.DB, userId, username, password, email string) error {
+	var err error
+	ok := ExistsUsername(tx, username)
+
+	encodePassword, err := secret2.EncodePassword(password)
+	if !ok {
+		err = tx.Transaction(func(tx *gorm.DB) error {
+			err = tx.Table(tableNameUser).Create(&pbmodel.User{
+				UserId:   userId,
+				Name:     username,
+				Email:    email,
+				Role:     pbmodel.User_User,
+				Status:   pbmodel.User_active,
+				Password: encodePassword,
+				Created:  time.Now().Unix(),
+				Updated:  time.Now().Unix(),
+			}).Error
+			if err != nil {
+				return err
+			}
+			err = InitAccessKey(tx, userId)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	return err
+}

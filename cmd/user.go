@@ -92,7 +92,7 @@ var add = &cobra.Command{
 		if len(args[0]) == 0 || len(args[1]) == 0 {
 			fmt.Println("username or password is empty")
 		}
-		err = user.CreateUser(options.DBConn, userId, args[0], passwordWithSHA256, args[2])
+		err = user.AddUser(options.DBConn, userId, args[0], passwordWithSHA256, args[2])
 		if err != nil {
 			fmt.Println(err)
 			return
