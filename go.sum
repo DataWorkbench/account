@@ -80,6 +80,10 @@ github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/DataWorkbench/common v0.0.0-20220721062802-9220866ebb3e h1:IrEvNLhogw7u8CBE10HpGOjpFwF8OtRACBh1pEpNiws=
 github.com/DataWorkbench/common v0.0.0-20220721062802-9220866ebb3e/go.mod h1:fuFpS6iG8e2VVEwE0ZoDNB2IPSx5RaKiblPc5aopYWw=
+github.com/DataWorkbench/common v0.0.0-20220725041354-077307e49630 h1:fwW+k/o23u6L7HDTviq/wGXd/ULWrrXLOTxRPtKUnjs=
+github.com/DataWorkbench/common v0.0.0-20220725041354-077307e49630/go.mod h1:fuFpS6iG8e2VVEwE0ZoDNB2IPSx5RaKiblPc5aopYWw=
+github.com/DataWorkbench/common v0.0.0-20220725045507-e83643304cd2 h1:I5niCMMz7/Qeegw6DdONLP6Vqis3sXktUuwI+JxXvkA=
+github.com/DataWorkbench/common v0.0.0-20220725045507-e83643304cd2/go.mod h1:fuFpS6iG8e2VVEwE0ZoDNB2IPSx5RaKiblPc5aopYWw=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704 h1:XRck+LCallgKe6pR28PXsPadPTozMPwvrcx0GVf/b6g=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704/go.mod h1:zymxJLXn162xdWYUqIb729S3ZzRQpdTj/LwnW+xxru4=
 github.com/DataWorkbench/gproto v0.0.0-20220714040257-4514070e27b7/go.mod h1:p0j7UkANQc+TO7L8RZIFhrI81jlZsFrXbI+eVn58AuU=
