@@ -116,7 +116,7 @@ func DescribeUserByName(tx *gorm.DB, userName string) (info *pbmodel.User, err e
 	}}).Take(&info).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = qerror.ResourceNotExists.Format(userName)
+			err = qerror.UserNotExists.Format(userName)
 		}
 		return
 	}
