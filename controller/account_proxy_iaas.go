@@ -19,6 +19,11 @@ type AccountProxyIaaS struct {
 
 func (x *AccountProxyIaaS) ListUsersByProxy(ctx context.Context, req *pbrequest.ListUsersByProxy) (
 	*pbresponse.ListUsersByProxy, error) {
+	if len(req.UserIds) == 0 {
+		// IaaS will returns all users if id list of id is empty.
+		// Thus wo should return empty in proxy.
+		return &pbresponse.ListUsersByProxy{Infos: nil, Total: 0, HasMore: false}, nil
+	}
 	output, err := options.IaaSClient.DescribeUsers(ctx, &iaas.DescribeUsersInput{
 		Users:    req.UserIds,
 		Limit:    int(req.Limit),

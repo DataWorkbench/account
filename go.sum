@@ -78,8 +78,6 @@ github.com/BurntSushi/toml v0.4.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbi
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
-github.com/DataWorkbench/common v0.0.0-20220714040605-e24ff48af334 h1:JtEDv3zKeGXi3rJYF79rY/1G1I8RN/UeCu3VXJ31zT4=
-github.com/DataWorkbench/common v0.0.0-20220714040605-e24ff48af334/go.mod h1:JdJmDXaGRJeG1PQp/KF0RnE5NLNktV7yTqIqmCOpK5w=
 github.com/DataWorkbench/common v0.0.0-20220721062802-9220866ebb3e h1:IrEvNLhogw7u8CBE10HpGOjpFwF8OtRACBh1pEpNiws=
 github.com/DataWorkbench/common v0.0.0-20220721062802-9220866ebb3e/go.mod h1:fuFpS6iG8e2VVEwE0ZoDNB2IPSx5RaKiblPc5aopYWw=
 github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704 h1:XRck+LCallgKe6pR28PXsPadPTozMPwvrcx0GVf/b6g=
@@ -1090,7 +1088,7 @@ github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20201229170055-e5319fda7802/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
-github.com/tsuna/gohbase v0.0.0-20220316190246-5d94cc15d57f/go.mod h1:k1RlnrJ/xytciXwsPJRcPgYs80vuDFsM2dD7bddHkJ8=
+github.com/tsuna/gohbase v0.0.0-20220517082425-cb1f77f08e4f/go.mod h1:k1RlnrJ/xytciXwsPJRcPgYs80vuDFsM2dD7bddHkJ8=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
 github.com/uber/jaeger-client-go v2.29.1+incompatible h1:R9ec3zO3sGpzs0abd43Y+fBZRJ9uiH6lXyR/+u6brW4=
 github.com/uber/jaeger-client-go v2.29.1+incompatible/go.mod h1:WVhlPFC8FDjOFMMWRy2pZqQJSXxYSwNYOkTr/Z6d3Kk=
