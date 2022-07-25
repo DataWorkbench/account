@@ -101,7 +101,7 @@ func (x *AccountManagerLdap) UpdatedAccessKey(ctx context.Context, req *pbreques
 func (x *AccountManagerLdap) CreateSession(ctx context.Context, req *pbrequest.CreateSession) (*pbresponse.CreateSession, error) {
 	tx := options.DBConn.WithContext(ctx)
 	userName := req.UserName
-	password := req.Password
+	password := req.RawPassword
 	res, err := user.LdapProvider.Authentication(userName, password)
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func (x *AccountManagerLdap) CreateSession(ctx context.Context, req *pbrequest.C
 			return nil
 		})
 	}
-	userSet, sessionId, err := user.CreateSession(ctx, tx, options.RedisClient, req.UserName, req.Password, req.IgnorePassword)
+	userSet, sessionId, err := user.CreateSession(ctx, tx, options.RedisClient, req.UserName, req.RawPassword, req.IgnorePassword)
 	if err != nil {
 		return nil, err
 	}

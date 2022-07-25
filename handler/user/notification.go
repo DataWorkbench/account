@@ -15,6 +15,12 @@ func ListNotifications(tx *gorm.DB, input *pbrequest.ListNotifications) (output 
 	if input.UserId != "" {
 		exprs = append(exprs, clause.Eq{Column: "owner", Value: input.UserId})
 	}
+	if input.Search != "" {
+		like1 := clause.Like{Column: "name", Value: "%" + input.Search + "%"}
+		like2 := clause.Like{Column: "email", Value: "%" + input.Search + "%"}
+		or := clause.Or(like1, like2)
+		exprs = append(exprs, or)
+	}
 	if len(input.NfIds) != 0 {
 		exprs = append(exprs, gormwrap.BuildConditionClauseInWithString("id", input.NfIds))
 	}

@@ -66,7 +66,7 @@ func DescribePitrixAccessKeyByOwner(tx *gorm.DB, owner string) (info *pbmodel.Ac
 	}}).Take(&info).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = qerror.ResourceNotExists.Format(owner)
+			err = qerror.AccessKeyNotExists
 		}
 		return
 	}
