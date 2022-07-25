@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/DataWorkbench/common v0.0.0-20220714040605-e24ff48af334
 	github.com/DataWorkbench/glog v0.0.0-20220302035436-25a1ae256704
-	github.com/DataWorkbench/gproto v0.0.0-20220725050422-e9c453b30ce3
+	github.com/DataWorkbench/gproto v0.0.0-20220725071659-4ce501ec0b1c
 	github.com/DataWorkbench/loader v0.0.0-20210808061751-6e1ba7df5cdd
 	github.com/a8m/envsubst v1.3.0
 	github.com/go-ldap/ldap/v3 v3.4.3
