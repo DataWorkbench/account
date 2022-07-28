@@ -64,7 +64,7 @@ func (l *LdapAuth) Authentication(username, password string) (map[string]interfa
 	verify := &tls.Config{InsecureSkipVerify: l.ldapConf.InsecureSkipVerify}
 	// Reconnect with TLS
 	if l.ldapConf.StartTLS {
-		err := conn.StartTLS(verify)
+		err = conn.StartTLS(verify)
 		if err != nil {
 			return m, err
 		}
@@ -79,7 +79,8 @@ func (l *LdapAuth) Authentication(username, password string) (map[string]interfa
 	searchRequest := ldap.NewSearchRequest(
 		l.ldapConf.UserSearchBase,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=organizationalPerson)(%s=%s))", l.ldapConf.LoginAttribute, username),
+		// (&(objectClass=organizationalPerson)(uid=xxx))
+		fmt.Sprintf(LdapProvider.ldapConf.UserSearchFilter, l.ldapConf.LoginAttribute, username),
 		[]string{},
 		nil,
 	)

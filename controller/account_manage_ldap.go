@@ -88,8 +88,15 @@ func (x *AccountManagerLdap) DeleteAccessKeys(ctx context.Context, req *pbreques
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccessKeys not implemented")
 }
 func (x *AccountManagerLdap) DescribeAccessKey(ctx context.Context, req *pbrequest.DescribeAccessKey) (*pbresponse.DescribeAccessKey, error) {
-	// TODO
-	return nil, status.Errorf(codes.Unimplemented, "method DescribeAccessKey not implemented")
+	tx := options.DBConn.WithContext(ctx)
+	key, err := user.DescriptAccessKey(tx, req.AccessKeyId)
+	if err != nil {
+		return nil, err
+	}
+	reply := &pbresponse.DescribeAccessKey{
+		KeySet: key,
+	}
+	return reply, nil
 }
 func (x *AccountManagerLdap) CreateAccessKey(ctx context.Context, req *pbrequest.CreateAccessKey) (*pbresponse.CreateAccessKey, error) {
 	// TODO
@@ -122,6 +129,10 @@ func (x *AccountManagerLdap) CreateSession(ctx context.Context, req *pbrequest.C
 			}
 			return nil
 		})
+	}
+	err = user.UpdateUserByUsername(tx, userName, mail)
+	if err != nil {
+		return nil, err
 	}
 	userSet, sessionId, err := user.CreateSession(ctx, tx, options.RedisClient, req.UserName, req.RawPassword, req.IgnorePassword)
 	if err != nil {
