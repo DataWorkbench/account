@@ -70,10 +70,22 @@ source: "qingcloud"
 
 ldap:
   enable: false
-  url: "ldap://139.198.155.59:389"
-  managerDN: "cn=admin,dc=nodomain"
+  url: "ldap://139.198.155.59:10389"
+  managerDN: "uid=admin,ou=system"
   managerPassword: "secret"
-  userSearchBase: "dc=nodomain"
+  userSearchBase: "ou=group,dc=openmicroscopy,dc=org"
   loginAttribute: "uid"
   mailAttribute: "mail"
   insecureSkipVerify: true
+  startTLS: true
+  userSearchFilter: "(&(objectClass=organizationalPerson)(%s=%s))"
+#  enable: true
+#  url: "ldap://127.0.0.1:10389"
+#  managerDN: "uid=admin,ou=system"
+#  managerPassword: "secret"
+#  userSearchBase: "ou=groups,dc=example,dc=com"
+#  loginAttribute: "uid"
+#  mailAttribute: "mail"
+#  insecureSkipVerify: true
+#  startTLS: false
+#  userSearchFilter: "&(objectClass=organizationalPerson)"

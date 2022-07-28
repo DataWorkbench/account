@@ -83,6 +83,10 @@ var add = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
+		// 如果指定了用户id，则使用指定的用户id
+		if config.BindUserId != "" {
+			userId = config.BindUserId
+		}
 		hash := sha256.New()
 		_, err = hash.Write([]byte(args[1]))
 		if err != nil {
@@ -148,6 +152,31 @@ var delete = &cobra.Command{
 	},
 }
 
+var key = &cobra.Command{
+	Use:   "key",
+	Short: "create an accessKey for the user",
+	Long:  `create an accessKey for the user`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// 加载配置文件
+		err := options.Init()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		// 创建accessKey
+		if config.BindUserId != "" {
+			err := user.InitAccessKey(options.DBConn, config.BindUserId)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+		} else {
+			fmt.Println("please specify the user id")
+			return
+		}
+	},
+}
+
 func init() {
 	root.AddCommand(userCmd)
 
@@ -158,6 +187,9 @@ func init() {
 	userCmd.AddCommand(add)
 
 	userCmd.AddCommand(delete)
+
+	userCmd.AddCommand(key)
+
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
@@ -169,5 +201,9 @@ func init() {
 	// userCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	userCmd.PersistentFlags().StringVarP(&config.FilePath, "file", "f", "", "config file path")
+
+	add.Flags().StringVarP(&config.BindUserId, "userid", "u", "", "bind user id")
+
+	key.Flags().StringVarP(&config.BindUserId, "userid", "u", "", "bind user id")
 
 }

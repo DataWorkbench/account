@@ -116,7 +116,7 @@ func DescribeUserByName(tx *gorm.DB, userName string) (info *pbmodel.User, err e
 	}}).Take(&info).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = qerror.ResourceNotExists.Format(userName)
+			err = qerror.UserNotExists.Format(userName)
 		}
 		return
 	}
@@ -289,5 +289,11 @@ func AddUser(tx *gorm.DB, userId, username, password, email string) error {
 			return nil
 		})
 	}
+	return err
+}
+
+func UpdateUserByUsername(tx *gorm.DB, userName, email string) error {
+	var err error
+	err = tx.Table(tableNameUser).Where("name = ?", userName).Update("email", email).Error
 	return err
 }
