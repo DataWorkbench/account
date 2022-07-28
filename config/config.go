@@ -26,6 +26,8 @@ const (
 
 var FilePath string
 
+var BindUserId string
+
 const (
 	envPrefix = "ACCOUNT"
 )
