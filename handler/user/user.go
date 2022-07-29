@@ -293,7 +293,6 @@ func AddUser(tx *gorm.DB, userId, username, password, email string) error {
 }
 
 func UpdateUserByUsername(tx *gorm.DB, userName, email string) error {
-	var err error
-	err = tx.Table(tableNameUser).Where("name = ?", userName).Update("email", email).Error
+	err := tx.Table(tableNameUser).Where("name = ?", userName).Update("email", email).Error
 	return err
 }
