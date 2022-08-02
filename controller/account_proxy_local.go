@@ -23,6 +23,7 @@ func (x *AccountProxyLocal) ListUsersByProxy(ctx context.Context, req *pbrequest
 		Offset:  req.Offset,
 		UserIds: req.UserIds,
 		Name:    req.Name,
+		Search:  req.Search,
 	})
 	if err != nil {
 		return nil, err

@@ -24,6 +24,10 @@ func ListUsers(tx *gorm.DB, input *pbrequest.ListUsers) (output *pbresponse.List
 	if len(input.UserIds) != 0 {
 		exprs = append(exprs, gormwrap.BuildConditionClauseInWithString("user_id", input.UserIds))
 	}
+	if len(input.Search) > 0 {
+		// CONCAT(`id`, `name`)
+		exprs = append(exprs, clause.Like{Column: "name", Value: "%" + input.Search + "%"})
+	}
 
 	var infos []*pbmodel.User
 	var total int64
