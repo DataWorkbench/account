@@ -53,6 +53,36 @@ func CreateSession(ctx context.Context, tx *gorm.DB, rdb rediswrap.Client, userN
 	return
 }
 
+func CreateSessionAuth(ctx context.Context, tx *gorm.DB, rdb rediswrap.Client, userName string) (
+	userSet *pbmodel.User, sessionId string, err error) {
+
+	var (
+		keySet *pbmodel.AccessKey
+	)
+	userSet, err = DescribeUserByName(tx, userName)
+	if err != nil {
+		return
+	}
+	keySet, err = DescribePitrixAccessKeyByOwner(tx, userSet.UserId)
+	if err != nil {
+		return
+	}
+	sessionId = secret.GenerateSessionId()
+	sessionValue := &sessionCache{
+		UserSet: userSet,
+		KeySet:  keySet,
+	}
+	jsonString, err := json.Marshal(sessionValue)
+	if err != nil {
+		return
+	}
+	_, err = rdb.SetNX(ctx, sessionId, jsonString, time.Second*60*60*24).Result()
+	if err != nil {
+		return
+	}
+	return
+}
+
 func CheckSession(ctx context.Context, rdb rediswrap.Client, sessionId string) (
 	userSet *pbmodel.User, keySet *pbmodel.AccessKey, err error) {
 	var jsonValue []byte

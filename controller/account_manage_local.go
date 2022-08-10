@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/DataWorkbench/account/handler/user"
@@ -219,4 +220,44 @@ func CreateAdminUser(ctx context.Context) error {
 	password := hex.EncodeToString(hash.Sum(nil))
 	err = user.CreateAdminUser(tx, adminId, "admin", password, "account@yunify.com")
 	return err
+}
+
+func (x *AccountManagerLocal) CreateSessionAuth(ctx context.Context, req *pbrequest.CreateSession) (reply *pbresponse.CreateSession, err error) {
+	tx := options.DBConn.WithContext(ctx)
+
+	ok := user.ExistsUsername(tx, req.UserName)
+	// create user
+	if !ok {
+		id, err := options.IdGeneratorUser.Take()
+		if err != nil {
+			return nil, err
+		}
+		hash := sha256.New()
+		_, err = hash.Write([]byte(req.UserName))
+		if err != nil {
+			return nil, err
+		}
+		password := hex.EncodeToString(hash.Sum(nil))
+
+		err = gormwrap.ExecuteFuncWithTxn(ctx, options.DBConn, func(tx *gorm.DB) error {
+			if xErr := user.CreateUser(tx, id, req.UserName, password, fmt.Sprintf("%s@%s.com", req.UserName, req.UserName), pbmodel.User_Native); err != nil {
+				return xErr
+			}
+			if xErr := user.InitAccessKey(tx, id); xErr != nil {
+				return xErr
+			}
+			return nil
+		})
+	}
+
+	userSet, sessionId, err := user.CreateSessionAuth(ctx, tx, options.RedisClient, req.UserName)
+	if err != nil {
+		return nil, err
+	}
+	reply = &pbresponse.CreateSession{
+		SessionId: sessionId,
+		UserSet:   userSet,
+	}
+
+	return reply, nil
 }
