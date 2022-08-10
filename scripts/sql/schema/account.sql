@@ -6,6 +6,7 @@ CREATE TABLE `user` (
     `email` VARCHAR(255) DEFAULT '' NOT NULL,
     `status` TINYINT NOT NULL,
     `role` TINYINT NOT NULL,
+    `source` TINYINT(1) UNSIGNED DEFAULT 1 NOT NULL,
     `created` BIGINT(20) UNSIGNED NOT NULL,
     `updated` BIGINT(20) UNSIGNED NOT NULL,
 
