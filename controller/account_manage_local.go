@@ -5,6 +5,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"time"
+
 	"github.com/DataWorkbench/account/handler/user"
 	"github.com/DataWorkbench/account/options"
 	"github.com/DataWorkbench/common/gormwrap"
@@ -13,7 +15,6 @@ import (
 	"github.com/DataWorkbench/gproto/xgo/types/pbrequest"
 	"github.com/DataWorkbench/gproto/xgo/types/pbresponse"
 	"gorm.io/gorm"
-	"time"
 )
 
 type sessionCache struct {
@@ -52,7 +53,7 @@ func (x *AccountManagerLocal) CreateUser(ctx context.Context, req *pbrequest.Cre
 		return nil, err
 	}
 	err = gormwrap.ExecuteFuncWithTxn(ctx, options.DBConn, func(tx *gorm.DB) error {
-		if xErr := user.CreateUser(tx, userId, req.Name, req.Password, req.Email); err != nil {
+		if xErr := user.CreateUser(tx, userId, req.Name, req.Password, req.Email, pbmodel.User_Native); err != nil {
 			return xErr
 		}
 		if xErr := user.InitAccessKey(tx, userId); xErr != nil {

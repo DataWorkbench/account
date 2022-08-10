@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+
 	"github.com/DataWorkbench/account/handler/user"
 	"github.com/DataWorkbench/account/options"
 	"github.com/DataWorkbench/common/gormwrap"
@@ -121,7 +122,7 @@ func (x *AccountManagerLdap) CreateSession(ctx context.Context, req *pbrequest.C
 			return nil, err
 		}
 		err = gormwrap.ExecuteFuncWithTxn(ctx, options.DBConn, func(tx *gorm.DB) error {
-			if xErr := user.CreateUser(tx, userId, userName, password, mail); err != nil {
+			if xErr := user.CreateUser(tx, userId, userName, password, mail, pbmodel.User_Ldap); err != nil {
 				return xErr
 			}
 			if xErr := user.InitAccessKey(tx, userId); xErr != nil {

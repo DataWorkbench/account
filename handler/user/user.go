@@ -57,7 +57,7 @@ func ListUsers(tx *gorm.DB, input *pbrequest.ListUsers) (output *pbresponse.List
 	return
 }
 
-func CreateUser(tx *gorm.DB, userId, name, password, email string) (err error) {
+func CreateUser(tx *gorm.DB, userId, name, password, email string, source pbmodel.User_Source) (err error) {
 	// Check user name is conflict
 	var x string
 	err = tx.Table(tableNameUser).Select("user_id").Clauses(clause.Where{Exprs: []clause.Expression{
@@ -85,6 +85,7 @@ func CreateUser(tx *gorm.DB, userId, name, password, email string) (err error) {
 		Email:    email,
 		Role:     pbmodel.User_User,
 		Status:   pbmodel.User_active,
+		Source:   source,
 		Password: password,
 		Created:  now,
 		Updated:  now,
@@ -249,6 +250,7 @@ func CreateAdminUser(tx *gorm.DB, userId, username, password, email string) erro
 				Email:    email,
 				Role:     pbmodel.User_Admin,
 				Status:   pbmodel.User_active,
+				Source:   pbmodel.User_Native,
 				Password: encodePassword,
 				Created:  time.Now().Unix(),
 				Updated:  time.Now().Unix(),
@@ -279,6 +281,7 @@ func AddUser(tx *gorm.DB, userId, username, password, email string) error {
 				Email:    email,
 				Role:     pbmodel.User_User,
 				Status:   pbmodel.User_active,
+				Source:   pbmodel.User_Native,
 				Password: encodePassword,
 				Created:  time.Now().Unix(),
 				Updated:  time.Now().Unix(),
