@@ -240,7 +240,7 @@ func (x *AccountManagerLocal) CreateSessionAuth(ctx context.Context, req *pbrequ
 		password := hex.EncodeToString(hash.Sum(nil))
 
 		err = gormwrap.ExecuteFuncWithTxn(ctx, options.DBConn, func(tx *gorm.DB) error {
-			if xErr := user.CreateUser(tx, id, req.UserName, password, fmt.Sprintf("%s@%s.com", req.UserName, req.UserName), pbmodel.User_Native); err != nil {
+			if xErr := user.CreateUser(tx, id, req.UserName, password, fmt.Sprintf("%s@%s.com", req.UserName, req.UserName), pbmodel.User_EnFei); err != nil {
 				return xErr
 			}
 			if xErr := user.InitAccessKey(tx, id); xErr != nil {
@@ -254,6 +254,7 @@ func (x *AccountManagerLocal) CreateSessionAuth(ctx context.Context, req *pbrequ
 	if err != nil {
 		return nil, err
 	}
+	userSet.Password = ""
 	reply = &pbresponse.CreateSession{
 		SessionId: sessionId,
 		UserSet:   userSet,
