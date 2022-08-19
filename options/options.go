@@ -2,6 +2,9 @@ package options
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
 	"github.com/DataWorkbench/account/config"
 	"github.com/DataWorkbench/account/handler/user"
 	"github.com/DataWorkbench/common/constants"
@@ -92,6 +95,12 @@ func Init() (err error) {
 		user.InitLdap(cfg.Ldap)
 	}
 
+	// init admin user
+	err = InitAdminUser()
+	if err != nil {
+		return
+	}
+
 	return
 }
 
@@ -110,4 +119,25 @@ func Close() (err error) {
 	}
 	_ = RootLogger.Close()
 	return
+}
+
+func InitAdminUser() error {
+	// 创建用户
+	userId, err := IdGeneratorUser.Take()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	hash := sha256.New()
+	_, err = hash.Write([]byte("admin"))
+	if err != nil {
+		return err
+	}
+	passwordWithSHA256 := hex.EncodeToString(hash.Sum(nil))
+	err = user.CreateAdminUser(DBConn, userId, "admin", passwordWithSHA256, "admin@yunify.com")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
