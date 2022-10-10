@@ -339,7 +339,7 @@ func TestCreateUser(t *testing.T) {
 	ctx = gtrace.ContextWithId(ctx, reqId)
 	userName := "ryansun"
 	lang := "cn"
-	email := "ryansun@yunify.com"
+	email := "ryansun@xxxxx.com"
 	phone := "15802789195"
 	currency := "CNY"
 	createUser, err := client.CreateUser(ctx, &pbrequest.CreateUser{
@@ -402,10 +402,10 @@ func TestUpdateUser(t *testing.T) {
 	ctx = glog.WithContext(ctx, ln)
 	ctx = gtrace.ContextWithId(ctx, reqId)
 	userName1 := "ryansun1"
-	email1 := "ryansun1@yunify.com"
+	email1 := "ryansun1@xxxxx.com"
 	phone1 := "100861"
 	userName2 := "ryansun2"
-	email2 := "ryansun2@yunify.com"
+	email2 := "ryansun2@xxxxx.com"
 	phone2 := "100862"
 	lang := "cn"
 	currency := "CNY"
@@ -481,7 +481,7 @@ func TestDeleteUser(t *testing.T) {
 	ctx = gtrace.ContextWithId(ctx, reqId)
 	userName := "ryansun"
 	lang := "cn"
-	email := "ryansun@yunify.com"
+	email := "ryansun@xxxxx.com"
 	phone := "15802789195"
 	currency := "CNY"
 	createUser, err := client.CreateUser(ctx, &pbrequest.CreateUser{
@@ -531,7 +531,7 @@ func TestCreateSession(t *testing.T) {
 	ctx = gtrace.ContextWithId(ctx, reqId)
 	userName := "ryansun"
 	lang := "cn"
-	email := "ryansun@yunify.com"
+	email := "ryansun@xxxxx.com"
 	phone := "15802789195"
 	currency := "CNY"
 	password := "zhu88jie"
